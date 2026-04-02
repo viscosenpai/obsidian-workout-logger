@@ -1,0 +1,66 @@
+/* トレーニング入力モーダルのスタイル */
+
+/* セット入力全体のコンテナ */
+.sets-container {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-right: 10px; /* スクロールバー用の余白 */
+}
+
+/* 各セットの入力グループ */
+.set-input-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+}
+
+/* Obsidian標準のSettingアイテムのボーダーや余白をリセットして横並びに対応 */
+.set-input-group .setting-item {
+  border-top: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.set-input-group .setting-item-info {
+  margin-bottom: 5px;
+}
+
+.set-input-group .setting-item-name {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.set-input-group .setting-item-control,
+.set-input-group .setting-item-control input[type="number"] {
+  width: 100%;
+}
+
+/* 「Remove Set」ボタンのスタイル（警告色に設定） */
+.set-input-group > button {
+  margin-top: 22px; /* ラベルの高さに合わせて下方に配置 */
+  color: var(--text-error);
+  background-color: transparent;
+  border: 1px solid var(--background-modifier-error-hover);
+}
+
+.set-input-group > button:hover {
+  background-color: var(--background-modifier-error);
+  color: var(--text-on-accent);
+}
+
+/* 下部のボタンコンテナ */
+.modal-button-container {
+  border-top: 1px solid var(--background-modifier-border);
+  padding-top: 20px;
+}
