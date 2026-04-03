@@ -33,7 +33,7 @@ export async function getOrCreateExerciseNote(
   exerciseFolder: string,
   exerciseName: string,
   targetMuscle: string = "",
-  equipment: string = ""
+  equipment: string = "",
 ): Promise<TFile> {
   // Ensure the extension is .md
   const fileName = exerciseName.endsWith(".md")
@@ -58,19 +58,6 @@ is_assisted: false
 ---
 
 # ${exerciseName.replace(".md", "")}
-
-## Session
-\`\`\`dataview
-TABLE 
-    max(rows.weight) AS "重量(kg)",
-    max(rows.reps) AS "回数",
-    max(rows.volume) AS "ボリューム",
-    max(rows.rm) AS "推定1RM"
-FLATTEN file.lists AS L
-WHERE L.date AND file.path = this.file.path
-GROUP BY L.date
-SORT L.date DESC
-\`\`\`
 
 ## Log
 `;

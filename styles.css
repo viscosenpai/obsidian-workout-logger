@@ -32,6 +32,13 @@
   align-items: flex-start;
 }
 
+.modal:not(.mod-settings)
+  .setting-item:not(.setting-item-heading).set-input-block {
+  border-top: none;
+  padding: 0;
+  margin: 0;
+}
+
 .set-input-group .setting-item-info {
   margin-bottom: 5px;
 }
@@ -48,7 +55,7 @@
 
 /* 「Remove Set」ボタンのスタイル（警告色に設定） */
 .set-input-group > button {
-  margin-top: 22px; /* ラベルの高さに合わせて下方に配置 */
+  margin-top: 30px; /* ラベルの高さに合わせて下方に配置 */
   color: var(--text-error);
   background-color: transparent;
   border: 1px solid var(--background-modifier-error-hover);

@@ -12,7 +12,13 @@ import WorkoutLoggerPlugin from "./main";
 import { getOrCreateExerciseNote, appendLog } from "./file";
 
 const TARGET_MUSCLES = ["胸", "背中", "肩", "腕", "腹", "足", "有酸素"];
-const EQUIPMENT_TYPES = ["フリーウェイト", "ダンベル", "マシン", "自重", "その他"];
+const EQUIPMENT_TYPES = [
+  "フリーウェイト",
+  "ダンベル",
+  "マシン",
+  "自重",
+  "その他",
+];
 
 export class LoggerModal extends Modal {
   plugin: WorkoutLoggerPlugin;
@@ -174,6 +180,7 @@ export class LoggerModal extends Modal {
       const setDiv = setsContainer.createDiv({ cls: "set-input-group" });
 
       new Setting(setDiv)
+        .setClass("set-input-block")
         .setName(`Set ${setIndex + 1} - Weight (kg/lbs)`)
         .addText((text) => {
           text.inputEl.type = "number";
@@ -183,6 +190,7 @@ export class LoggerModal extends Modal {
         });
 
       new Setting(setDiv)
+        .setClass("set-input-block")
         .setName(`Set ${setIndex + 1} - Reps`)
         .addText((text) => {
           text.inputEl.type = "number";
@@ -259,7 +267,7 @@ export class LoggerModal extends Modal {
       return;
     }
 
-    const validSets = this.sets.filter(s => s.weight > 0 && s.reps > 0);
+    const validSets = this.sets.filter((s) => s.weight > 0 && s.reps > 0);
 
     if (validSets.length === 0) {
       new Notice("⚠️ Enter at least one valid set (weight and reps > 0)!");
@@ -272,15 +280,15 @@ export class LoggerModal extends Modal {
         this.plugin.settings.exerciseFolder,
         this.exerciseName,
         this.targetMuscle,
-        this.equipment
+        this.equipment,
       );
 
       await appendLog(this.app, file, validSets, this.setType, this.logDate);
-      
-      const setsSummary = validSets.map(s => `${s.weight}kg x ${s.reps}reps`).join(', ');
-      new Notice(
-        `✅ Logged ${setsSummary} for ${this.exerciseName}`,
-      );
+
+      const setsSummary = validSets
+        .map((s) => `${s.weight}kg x ${s.reps}reps`)
+        .join(", ");
+      new Notice(`✅ Logged ${setsSummary} for ${this.exerciseName}`);
 
       this.close();
     } catch (error) {
