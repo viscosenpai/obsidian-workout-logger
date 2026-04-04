@@ -2,14 +2,14 @@ import {
   App,
   Modal,
   Setting,
-  TextComponent,
   Notice,
   TFolder,
   TFile,
   DropdownComponent,
 } from "obsidian";
 import WorkoutLoggerPlugin from "./main";
-import { getOrCreateExerciseNote, appendLog } from "./file";
+import { getOrCreateExerciseNote, appendLog, appendBodyMetrics } from "./file";
+import { EQUIPMENT_METS, calculateCalories } from "./utils";
 
 const TARGET_MUSCLES = ["胸", "背中", "肩", "腕", "腹", "足", "有酸素"];
 const EQUIPMENT_TYPES = [
@@ -23,13 +23,15 @@ const EQUIPMENT_TYPES = [
 export class LoggerModal extends Modal {
   plugin: WorkoutLoggerPlugin;
   exerciseName: string = "";
-  setType: string = "normal";
-  sets: { weight: number; reps: number }[] = [];
+  sets: { weight: number; reps: number; rpe: number | null }[] = [];
   logDate: string = window.moment().format("YYYY-MM-DD");
   targetMuscle: string = "";
   targetMuscleDropdown: DropdownComponent | null = null;
   equipment: string = "";
   equipmentDropdown: DropdownComponent | null = null;
+  bodyWeight: number = 0;
+  bodyFatPercentage: number = 0;
+  workoutDuration: number = 0; // in minutes
 
   constructor(app: App, plugin: WorkoutLoggerPlugin) {
     super(app);
@@ -41,12 +43,57 @@ export class LoggerModal extends Modal {
     contentEl.empty();
     contentEl.createEl("h1", { text: "🏋️‍♂️ Log Workout Set" });
 
+    this.bodyWeight = this.plugin.settings.bodyWeight;
+    this.bodyFatPercentage = this.plugin.settings.bodyFatPercentage;
+
     this.renderExerciseSelect(contentEl);
     this.renderTargetMuscleSelect(contentEl);
     this.renderEquipmentSelect(contentEl);
     this.renderLogDatePicker(contentEl);
+
+    if (this.plugin.settings.calculateCalories) {
+      this.renderCalorieInputs(contentEl);
+    }
+
     this.renderInputs(contentEl);
     this.renderButtons(contentEl);
+  }
+
+  private renderCalorieInputs(containerEl: HTMLElement) {
+    new Setting(containerEl)
+      .setName("Body Weight (kg)")
+      .setDesc("Used for calorie calculation. Syncs with plugin settings.")
+      .addText((text) => {
+        text.inputEl.type = "number";
+        text.setValue(this.bodyWeight.toString());
+        text.onChange((value) => {
+          this.bodyWeight = parseFloat(value) || 0;
+        });
+      });
+
+    new Setting(containerEl)
+      .setName("Body Fat Percentage (%)")
+      .setDesc(
+        "Current body fat %. Logged with the entry and syncs with plugin settings.",
+      )
+      .addText((text) => {
+        text.inputEl.type = "number";
+        text.setValue(this.bodyFatPercentage.toString());
+        text.onChange((value) => {
+          this.bodyFatPercentage = parseFloat(value) || 0;
+        });
+      });
+
+    new Setting(containerEl)
+      .setName("Workout Duration (minutes)")
+      .setDesc("Duration of this exercise (e.g., 30 for 30 mins).")
+      .addText((text) => {
+        text.inputEl.type = "number";
+        text.setValue(this.workoutDuration.toString());
+        text.onChange((value) => {
+          this.workoutDuration = parseFloat(value) || 0;
+        });
+      });
   }
 
   /**
@@ -199,6 +246,20 @@ export class LoggerModal extends Modal {
           });
         });
 
+      new Setting(setDiv)
+        .setClass("set-input-block")
+        .setName(`Set ${setIndex + 1} - RPE`)
+        .addDropdown((dropdown) => {
+          dropdown.addOption("", "-");
+          for (let rpe = 6; rpe <= 10; rpe += 0.5) {
+            const val = rpe.toString();
+            dropdown.addOption(val, val);
+          }
+          dropdown.setValue("").onChange((value) => {
+            this.sets[setIndex].rpe = value ? parseFloat(value) : null;
+          });
+        });
+
       const removeButton = setDiv.createEl("button", { text: "Remove Set" });
       removeButton.addEventListener("click", () => {
         this.sets.splice(setIndex, 1);
@@ -206,7 +267,7 @@ export class LoggerModal extends Modal {
         this.updateSetLabels(setsContainer);
       });
 
-      this.sets.push({ weight: 0, reps: 0 });
+      this.sets.push({ weight: 0, reps: 0, rpe: null });
     };
 
     const addSetButton = containerEl.createEl("button", { text: "Add Set" });
@@ -229,9 +290,13 @@ export class LoggerModal extends Modal {
       const repsSetting = group.querySelector(
         ".setting-item:nth-child(2) .setting-name",
       );
+      const rpeSetting = group.querySelector(
+        ".setting-item:nth-child(3) .setting-name",
+      );
       if (weightSetting)
         weightSetting.textContent = `Set ${index + 1} - Weight (kg/lbs)`;
       if (repsSetting) repsSetting.textContent = `Set ${index + 1} - Reps`;
+      if (rpeSetting) rpeSetting.textContent = `Set ${index + 1} - RPE`;
     });
   }
 
@@ -274,6 +339,29 @@ export class LoggerModal extends Modal {
       return;
     }
 
+    let extraData: { duration: number; calories: number } | undefined;
+
+    if (this.plugin.settings.calculateCalories) {
+      // Sync body weight with settings
+      this.plugin.settings.bodyWeight =
+        this.bodyWeight || this.plugin.settings.bodyWeight;
+      this.plugin.settings.bodyFatPercentage =
+        this.bodyFatPercentage || this.plugin.settings.bodyFatPercentage;
+      await this.plugin.saveSettings();
+
+      const mets = EQUIPMENT_METS[this.equipment] || 5.0; // Default METs if not matched
+      const calories = calculateCalories(
+        mets,
+        this.bodyWeight,
+        this.workoutDuration / 60, // Convert minutes to hours
+      );
+
+      extraData = {
+        duration: this.workoutDuration,
+        calories: calories,
+      };
+    }
+
     try {
       const file = await getOrCreateExerciseNote(
         this.app,
@@ -283,7 +371,21 @@ export class LoggerModal extends Modal {
         this.equipment,
       );
 
-      await appendLog(this.app, file, validSets, this.setType, this.logDate);
+      await appendLog(this.app, file, validSets, this.logDate, extraData);
+
+      if (
+        this.plugin.settings.calculateCalories &&
+        this.plugin.settings.bodyMetricsNote &&
+        this.bodyWeight > 0
+      ) {
+        await appendBodyMetrics(
+          this.app,
+          this.plugin.settings.bodyMetricsNote,
+          this.logDate,
+          this.bodyWeight,
+          this.bodyFatPercentage,
+        );
+      }
 
       const setsSummary = validSets
         .map((s) => `${s.weight}kg x ${s.reps}reps`)

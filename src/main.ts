@@ -1,26 +1,34 @@
-import { Plugin } from 'obsidian';
-import { WorkoutLoggerSettings, DEFAULT_SETTINGS, WorkoutLoggerSettingTab } from './settings';
-import { LoggerModal } from './LoggerModal';
+import { Plugin } from "obsidian";
+import {
+  WorkoutLoggerSettings,
+  DEFAULT_SETTINGS,
+  WorkoutLoggerSettingTab,
+} from "./settings";
+import { LoggerModal } from "./LoggerModal";
 
 export default class WorkoutLoggerPlugin extends Plugin {
-  settings: WorkoutLoggerSettings;
+  settings: WorkoutLoggerSettings = DEFAULT_SETTINGS;
 
   async onload() {
     await this.loadSettings();
 
     // Adds a ribbon icon
-    const ribbonIconEl = this.addRibbonIcon('dumbbell', 'Workout Logger', (evt: MouseEvent) => {
-      new LoggerModal(this.app, this).open();
-    });
-    ribbonIconEl.addClass('workout-logger-ribbon-class');
+    const ribbonIconEl = this.addRibbonIcon(
+      "dumbbell",
+      "Workout Logger",
+      (evt: MouseEvent) => {
+        new LoggerModal(this.app, this).open();
+      },
+    );
+    ribbonIconEl.addClass("workout-logger-ribbon-class");
 
     // Adds a command
     this.addCommand({
-      id: 'open-workout-logger',
-      name: 'Open Logger',
+      id: "open-workout-logger",
+      name: "Open Logger",
       callback: () => {
         new LoggerModal(this.app, this).open();
-      }
+      },
     });
 
     // Add settings tab

@@ -72,20 +72,73 @@ is_assisted: false
 }
 
 /**
+ * Appends body weight and body fat percentage to a daily metrics note.
+ * Skips if an entry for the given date already exists.
+ * Returns true if appended, false if skipped.
+ */
+export async function appendBodyMetrics(
+  app: App,
+  notePath: string,
+  date: string,
+  bodyWeight: number,
+  bodyFatPercentage: number,
+): Promise<boolean> {
+  const normalizedPath = normalizePath(
+    notePath.endsWith(".md") ? notePath : `${notePath}.md`,
+  );
+
+  const parts = normalizedPath.split("/");
+  if (parts.length > 1) {
+    const folderPath = parts.slice(0, -1).join("/");
+    await ensureFolderExists(app, folderPath);
+  }
+
+  let file = app.vault.getAbstractFileByPath(normalizedPath);
+  if (!(file instanceof TFile)) {
+    const template = `# Body Metrics\n\n## Log\n`;
+    file = await app.vault.create(normalizedPath, template);
+  }
+  if (!(file instanceof TFile)) {
+    throw new Error(`Failed to get or create file: ${normalizedPath}`);
+  }
+
+  let alreadyLogged = false;
+
+  await app.vault.process(file, (data) => {
+    if (data.includes(`[date:: ${date}]`)) {
+      alreadyLogged = true;
+      return data;
+    }
+    const line = `- [date:: ${date}] | [body_weight:: ${bodyWeight}] | [body_fat_percentage:: ${bodyFatPercentage}]`;
+    const separator = data.endsWith("\n") ? "" : "\n";
+    return `${data}${separator}${line}\n`;
+  });
+
+  return !alreadyLogged;
+}
+
+/**
  * Appends a log entry to the file in a Dataview-friendly format.
  */
 export async function appendLog(
   app: App,
   file: TFile,
-  sets: { weight: number; reps: number }[],
-  setType: string,
+  sets: { weight: number; reps: number; rpe: number | null }[],
   logDate: string,
+  extra?: { duration: number; calories: number },
 ): Promise<void> {
   const logLines = sets
     .map((set) => {
       const volume = calculateVolume(set.weight, set.reps);
       const oneRM = calculate1RM(set.weight, set.reps);
-      return `- [date:: ${logDate}] | [weight:: ${set.weight}] kg x [reps:: ${set.reps}] | [volume:: ${volume}] | [rm:: ${oneRM}] | [set_type:: ${setType}]`;
+      let line = `- [date:: ${logDate}] | [weight:: ${set.weight}] kg x [reps:: ${set.reps}] | [volume:: ${volume}] | [rm:: ${oneRM}]`;
+      if (set.rpe !== null) {
+        line += ` | [rpe:: ${set.rpe}]`;
+      }
+      if (extra && extra.duration > 0) {
+        line += ` | [duration:: ${extra.duration}] | [calories:: ${extra.calories}]`;
+      }
+      return line;
     })
     .join("\n");
 
