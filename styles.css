@@ -71,3 +71,183 @@
   border-top: 1px solid var(--background-modifier-border);
   padding-top: 20px;
 }
+
+/* ===== Workout Dashboard ===== */
+
+.wl-dashboard {
+  padding: 1.5rem;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.wl-dashboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.wl-dashboard__header h2 {
+  margin: 0;
+}
+
+.wl-dashboard__refresh {
+  cursor: pointer;
+  padding: 0.3rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.wl-dashboard__refresh:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+/* Period tab bar */
+.wl-dashboard__tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.wl-dashboard__tab {
+  padding: 0.3rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--font-ui-small);
+  transition: background 0.15s, color 0.15s;
+}
+
+.wl-dashboard__tab:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.wl-dashboard__tab.is-active {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+/* Sections */
+.wl-dashboard__section {
+  margin-bottom: 2rem;
+}
+
+.wl-dashboard__section h3 {
+  margin: 0 0 0.75rem 0;
+}
+
+.wl-dashboard__section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.wl-dashboard__section-header h3 {
+  margin: 0;
+}
+
+.wl-dashboard__exercise-select {
+  padding: 0.25rem 0.5rem;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  max-width: 240px;
+}
+
+/* Charts grid: side by side on wide panes */
+.wl-dashboard__charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.wl-dashboard__empty {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  padding: 0.75rem 0;
+}
+
+/* ===== SVG Line Chart ===== */
+
+.wl-chart {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 1rem;
+  min-width: 0; /* prevent grid blowout */
+}
+
+.wl-chart__label {
+  margin: 0 0 0.5rem 0;
+  font-size: var(--font-ui-smaller);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wl-chart__empty {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  padding: 2.5rem 0;
+  text-align: center;
+}
+
+.wl-chart__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.wl-chart__grid {
+  stroke: var(--background-modifier-border);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.wl-chart__axis {
+  stroke: var(--background-modifier-border);
+  stroke-width: 1.5;
+}
+
+.wl-chart__axis-text {
+  fill: var(--text-faint);
+  font-size: 10px;
+  font-family: var(--font-monospace);
+}
+
+.wl-chart__axis-unit {
+  fill: var(--text-faint);
+  font-size: 10px;
+}
+
+.wl-chart__line {
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.wl-chart__area {
+  opacity: 0.1;
+}
+
+.wl-chart__dot {
+  stroke: var(--background-primary);
+  stroke-width: 1.5;
+  cursor: default;
+}

@@ -5,6 +5,7 @@ import {
   WorkoutLoggerSettingTab,
 } from "./settings";
 import { LoggerModal } from "./LoggerModal";
+import { DashboardView, DASHBOARD_VIEW_TYPE } from "./DashboardView";
 
 export default class WorkoutLoggerPlugin extends Plugin {
   settings: WorkoutLoggerSettings = DEFAULT_SETTINGS;
@@ -12,17 +13,32 @@ export default class WorkoutLoggerPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
 
-    // Adds a ribbon icon
+    // Register the dashboard view
+    this.registerView(
+      DASHBOARD_VIEW_TYPE,
+      (leaf) => new DashboardView(leaf, this),
+    );
+
+    // Ribbon opens the dashboard
     const ribbonIconEl = this.addRibbonIcon(
-      "dumbbell",
-      "Workout Logger",
-      (evt: MouseEvent) => {
-        new LoggerModal(this.app, this).open();
+      "bar-chart-2",
+      "Workout Dashboard",
+      () => {
+        this.activateDashboard();
       },
     );
     ribbonIconEl.addClass("workout-logger-ribbon-class");
 
-    // Adds a command
+    // Command: open dashboard
+    this.addCommand({
+      id: "open-workout-dashboard",
+      name: "Open Dashboard",
+      callback: () => {
+        this.activateDashboard();
+      },
+    });
+
+    // Command: open logger modal (unchanged)
     this.addCommand({
       id: "open-workout-logger",
       name: "Open Logger",
@@ -36,7 +52,17 @@ export default class WorkoutLoggerPlugin extends Plugin {
   }
 
   onunload() {
-    // cleanup on unload if needed
+    this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
+  }
+
+  async activateDashboard(): Promise<void> {
+    const { workspace } = this.app;
+    let leaf = workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE)[0];
+    if (!leaf) {
+      leaf = workspace.getLeaf(false);
+      await leaf.setViewState({ type: DASHBOARD_VIEW_TYPE, active: true });
+    }
+    workspace.revealLeaf(leaf);
   }
 
   async loadSettings() {
