@@ -8,8 +8,8 @@ import {
   DropdownComponent,
 } from "obsidian";
 import WorkoutLoggerPlugin from "./main";
-import { getOrCreateExerciseNote, appendLog, appendBodyMetrics } from "./file";
-import { EQUIPMENT_METS, calculateCalories } from "./utils";
+import { getOrCreateExerciseNote, appendLog, appendCardioLog, appendBodyMetrics } from "./file";
+import { EQUIPMENT_METS, calculateCalories, calculateWalkingCalorie } from "./utils";
 
 const TARGET_MUSCLES = ["胸", "背中", "肩", "腕", "腹", "足", "有酸素"];
 const EQUIPMENT_TYPES = [
@@ -31,7 +31,14 @@ export class LoggerModal extends Modal {
   equipmentDropdown: DropdownComponent | null = null;
   bodyWeight: number = 0;
   bodyFatPercentage: number = 0;
-  workoutDuration: number = 0; // in minutes
+  workoutDuration: number = 0; // in minutes (strength)
+  // Cardio-specific fields
+  cardioSpeed: number = 0;    // km/h
+  cardioIncline: number = 0;  // %
+  cardioDuration: number = 0; // minutes
+  // Dynamic section containers (set in onOpen)
+  private calorieContainer: HTMLElement | null = null;
+  private inputsContainer: HTMLElement | null = null;
 
   constructor(app: App, plugin: WorkoutLoggerPlugin) {
     super(app);
@@ -51,12 +58,32 @@ export class LoggerModal extends Modal {
     this.renderEquipmentSelect(contentEl);
     this.renderLogDatePicker(contentEl);
 
+    // 動的セクションはDOM上の最終位置に固定し、targetMuscle 変更時に再描画
+    this.calorieContainer = contentEl.createDiv();
+    this.inputsContainer = contentEl.createDiv();
+
+    this.refreshDynamicSections();
+    this.renderButtons(contentEl);
+  }
+
+  private isCardioMode(): boolean {
+    return this.targetMuscle === "有酸素";
+  }
+
+  private refreshDynamicSections(): void {
+    if (!this.calorieContainer || !this.inputsContainer) return;
+    this.calorieContainer.empty();
+    this.inputsContainer.empty();
+
     if (this.plugin.settings.calculateCalories) {
-      this.renderCalorieInputs(contentEl);
+      this.renderCalorieInputs(this.calorieContainer);
     }
 
-    this.renderInputs(contentEl);
-    this.renderButtons(contentEl);
+    if (this.isCardioMode()) {
+      this.renderCardioInputs(this.inputsContainer);
+    } else {
+      this.renderInputs(this.inputsContainer);
+    }
   }
 
   private renderCalorieInputs(containerEl: HTMLElement) {
@@ -84,14 +111,53 @@ export class LoggerModal extends Modal {
         });
       });
 
-    new Setting(containerEl)
-      .setName("Workout Duration (minutes)")
-      .setDesc("Duration of this exercise (e.g., 30 for 30 mins).")
+    if (!this.isCardioMode()) {
+      new Setting(containerEl)
+        .setName("Workout Duration (minutes)")
+        .setDesc("Duration of this exercise (e.g., 30 for 30 mins).")
+        .addText((text) => {
+          text.inputEl.type = "number";
+          text.setValue(this.workoutDuration.toString());
+          text.onChange((value) => {
+            this.workoutDuration = parseFloat(value) || 0;
+          });
+        });
+    }
+  }
+
+  private renderCardioInputs(containerEl: HTMLElement) {
+    const card = containerEl.createDiv({ cls: "cardio-input-card" });
+    card.createEl("p", { cls: "cardio-input-card__label", text: "有酸素運動" });
+
+    new Setting(card)
+      .setName("速度 (km/h)")
       .addText((text) => {
         text.inputEl.type = "number";
-        text.setValue(this.workoutDuration.toString());
+        text.inputEl.step = "0.1";
+        text.setValue(this.cardioSpeed > 0 ? this.cardioSpeed.toString() : "");
         text.onChange((value) => {
-          this.workoutDuration = parseFloat(value) || 0;
+          this.cardioSpeed = parseFloat(value) || 0;
+        });
+      });
+
+    new Setting(card)
+      .setName("傾斜 (%)")
+      .addText((text) => {
+        text.inputEl.type = "number";
+        text.inputEl.step = "0.5";
+        text.setValue(this.cardioIncline > 0 ? this.cardioIncline.toString() : "");
+        text.onChange((value) => {
+          this.cardioIncline = parseFloat(value) || 0;
+        });
+      });
+
+    new Setting(card)
+      .setName("時間 (分)")
+      .addText((text) => {
+        text.inputEl.type = "number";
+        text.setValue(this.cardioDuration > 0 ? this.cardioDuration.toString() : "");
+        text.onChange((value) => {
+          this.cardioDuration = parseFloat(value) || 0;
         });
       });
   }
@@ -179,6 +245,7 @@ export class LoggerModal extends Modal {
         });
         dropdown.setValue(this.targetMuscle).onChange((value) => {
           this.targetMuscle = value;
+          this.refreshDynamicSections();
         });
       });
   }
@@ -332,6 +399,29 @@ export class LoggerModal extends Modal {
       return;
     }
 
+    try {
+      const file = await getOrCreateExerciseNote(
+        this.app,
+        this.plugin.settings.exerciseFolder,
+        this.exerciseName,
+        this.targetMuscle,
+        this.equipment,
+      );
+
+      if (this.isCardioMode()) {
+        await this.submitCardio(file);
+      } else {
+        await this.submitStrength(file);
+      }
+
+      this.close();
+    } catch (error) {
+      console.error(error);
+      new Notice("❌ Failed to log the set. Check console for details.");
+    }
+  }
+
+  private async submitStrength(file: TFile) {
     const validSets = this.sets.filter((s) => s.weight > 0 && s.reps > 0);
 
     if (validSets.length === 0) {
@@ -342,18 +432,17 @@ export class LoggerModal extends Modal {
     let extraData: { duration: number; calories: number } | undefined;
 
     if (this.plugin.settings.calculateCalories) {
-      // Sync body weight with settings
       this.plugin.settings.bodyWeight =
         this.bodyWeight || this.plugin.settings.bodyWeight;
       this.plugin.settings.bodyFatPercentage =
         this.bodyFatPercentage || this.plugin.settings.bodyFatPercentage;
       await this.plugin.saveSettings();
 
-      const mets = EQUIPMENT_METS[this.equipment] || 5.0; // Default METs if not matched
+      const mets = EQUIPMENT_METS[this.equipment] || 5.0;
       const calories = calculateCalories(
         mets,
         this.bodyWeight,
-        this.workoutDuration / 60, // Convert minutes to hours
+        this.workoutDuration / 60,
       );
 
       extraData = {
@@ -362,41 +451,68 @@ export class LoggerModal extends Modal {
       };
     }
 
-    try {
-      const file = await getOrCreateExerciseNote(
+    await appendLog(this.app, file, validSets, this.logDate, extraData);
+
+    if (
+      this.plugin.settings.calculateCalories &&
+      this.plugin.settings.bodyMetricsNote &&
+      this.bodyWeight > 0
+    ) {
+      await appendBodyMetrics(
         this.app,
-        this.plugin.settings.exerciseFolder,
-        this.exerciseName,
-        this.targetMuscle,
-        this.equipment,
+        this.plugin.settings.bodyMetricsNote,
+        this.logDate,
+        this.bodyWeight,
+        this.bodyFatPercentage,
       );
-
-      await appendLog(this.app, file, validSets, this.logDate, extraData);
-
-      if (
-        this.plugin.settings.calculateCalories &&
-        this.plugin.settings.bodyMetricsNote &&
-        this.bodyWeight > 0
-      ) {
-        await appendBodyMetrics(
-          this.app,
-          this.plugin.settings.bodyMetricsNote,
-          this.logDate,
-          this.bodyWeight,
-          this.bodyFatPercentage,
-        );
-      }
-
-      const setsSummary = validSets
-        .map((s) => `${s.weight}kg x ${s.reps}reps`)
-        .join(", ");
-      new Notice(`✅ Logged ${setsSummary} for ${this.exerciseName}`);
-
-      this.close();
-    } catch (error) {
-      console.error(error);
-      new Notice("❌ Failed to log the set. Check console for details.");
     }
+
+    const setsSummary = validSets
+      .map((s) => `${s.weight}kg x ${s.reps}reps`)
+      .join(", ");
+    new Notice(`✅ Logged ${setsSummary} for ${this.exerciseName}`);
+  }
+
+  private async submitCardio(file: TFile) {
+    if (this.cardioDuration <= 0) {
+      new Notice("⚠️ 時間（分）を入力してください！");
+      return;
+    }
+
+    const calories = calculateWalkingCalorie(
+      this.bodyWeight || this.plugin.settings.bodyWeight,
+      this.cardioSpeed,
+      this.cardioIncline,
+      this.cardioDuration,
+    );
+
+    await appendCardioLog(
+      this.app,
+      file,
+      this.logDate,
+      this.cardioSpeed,
+      this.cardioIncline,
+      this.cardioDuration,
+      Math.round(calories),
+    );
+
+    if (
+      this.plugin.settings.calculateCalories &&
+      this.plugin.settings.bodyMetricsNote &&
+      this.bodyWeight > 0
+    ) {
+      await appendBodyMetrics(
+        this.app,
+        this.plugin.settings.bodyMetricsNote,
+        this.logDate,
+        this.bodyWeight,
+        this.bodyFatPercentage,
+      );
+    }
+
+    new Notice(
+      `✅ Logged ${this.cardioDuration}min cardio (${Math.round(calories)} kcal) for ${this.exerciseName}`,
+    );
   }
 
   onClose() {

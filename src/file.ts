@@ -148,3 +148,23 @@ export async function appendLog(
     return `${data}${separator}${logLines}\n`;
   });
 }
+
+/**
+ * Appends a cardio log entry (speed / incline / duration / calories).
+ */
+export async function appendCardioLog(
+  app: App,
+  file: TFile,
+  logDate: string,
+  speed: number,
+  incline: number,
+  duration: number,
+  calories: number,
+): Promise<void> {
+  const line = `- [date:: ${logDate}] | [speed:: ${speed}] | [incline:: ${incline}] | [duration:: ${duration}] | [calories:: ${calories}]`;
+
+  await app.vault.process(file, (data) => {
+    const separator = data.endsWith("\n") ? "" : "\n";
+    return `${data}${separator}${line}\n`;
+  });
+}

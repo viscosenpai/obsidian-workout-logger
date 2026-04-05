@@ -9,6 +9,7 @@ interface ExerciseEntry {
   reps: number;
   rm: number;
   volume: number;
+  calories: number;
 }
 
 interface BodyMetricsEntry {
@@ -35,6 +36,7 @@ export class DashboardView extends ItemView {
   private exerciseNames: string[] = [];
   private bodyMetricsData: BodyMetricsEntry[] = [];
   private exerciseData: ExerciseEntry[] = [];
+  private caloriesData: DayPoint[] = [];
 
   constructor(leaf: WorkspaceLeaf, plugin: WorkoutLoggerPlugin) {
     super(leaf);
@@ -73,6 +75,7 @@ export class DashboardView extends ItemView {
     if (this.selectedExercise) {
       this.exerciseData = await this.loadExerciseData(this.selectedExercise);
     }
+    this.caloriesData = await this.loadAllCalories();
   }
 
   private async loadExerciseNames(): Promise<string[]> {
@@ -114,6 +117,21 @@ export class DashboardView extends ItemView {
     return results.sort((a, b) => a.date.localeCompare(b.date));
   }
 
+  private async loadAllCalories(): Promise<DayPoint[]> {
+    const map = new Map<string, number>();
+    for (const name of this.exerciseNames) {
+      const entries = await this.loadExerciseData(name);
+      for (const e of entries) {
+        if (e.calories > 0) {
+          map.set(e.date, (map.get(e.date) ?? 0) + e.calories);
+        }
+      }
+    }
+    return Array.from(map.entries())
+      .map(([date, value]) => ({ date, value }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
   private async loadExerciseData(exerciseName: string): Promise<ExerciseEntry[]> {
     const folderPath = this.plugin.settings.exerciseFolder;
     const filePath = normalizePath(`${folderPath}/${exerciseName}.md`);
@@ -124,6 +142,7 @@ export class DashboardView extends ItemView {
     const results: ExerciseEntry[] = [];
     const re =
       /\[date:: ([^\]]+)\].*\[weight:: ([^\]]+)\].*\[reps:: ([^\]]+)\].*\[volume:: ([^\]]+)\].*\[rm:: ([^\]]+)\]/;
+    const caloriesRe = /\[calories:: ([^\]]+)\]/;
 
     for (const line of content.split("\n")) {
       const m = re.exec(line);
@@ -133,12 +152,15 @@ export class DashboardView extends ItemView {
       const volume = parseFloat(m[4]);
       const rm = parseFloat(m[5]);
       if (isNaN(weight) || isNaN(reps)) continue;
+      const cm = caloriesRe.exec(line);
+      const calories = cm ? parseFloat(cm[1]) : 0;
       results.push({
         date: m[1].trim(),
         weight,
         reps,
         volume: isNaN(volume) ? 0 : volume,
         rm: isNaN(rm) ? 0 : rm,
+        calories: isNaN(calories) ? 0 : calories,
       });
     }
     return results.sort((a, b) => a.date.localeCompare(b.date));
@@ -197,6 +219,7 @@ export class DashboardView extends ItemView {
 
     // Sections
     this.renderBodyMetricsSection(root);
+    this.renderCaloriesSection(root);
     this.renderExerciseSection(root);
   }
 
@@ -248,6 +271,17 @@ export class DashboardView extends ItemView {
     if (fatPoints.length > 0) {
       this.renderLineChart(chartsRow, fatPoints, "体脂肪率", "#ff6b6b", "%");
     }
+  }
+
+  private renderCaloriesSection(container: HTMLElement): void {
+    if (this.caloriesData.length === 0) return;
+
+    const section = container.createDiv({ cls: "wl-dashboard__section" });
+    section.createEl("h3", { text: "消費カロリー" });
+
+    const points = this.filterByPeriod(this.caloriesData, this.currentPeriod);
+    const chartsRow = section.createDiv({ cls: "wl-dashboard__charts" });
+    this.renderLineChart(chartsRow, points, "消費カロリー（日次合計）", "#f59e0b", "kcal");
   }
 
   private renderExerciseSection(container: HTMLElement): void {
