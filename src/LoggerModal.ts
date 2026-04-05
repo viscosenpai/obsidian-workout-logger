@@ -113,8 +113,8 @@ export class LoggerModal extends Modal {
 
     if (!this.isCardioMode()) {
       new Setting(containerEl)
-        .setName("Workout Duration (minutes)")
-        .setDesc("Duration of this exercise (e.g., 30 for 30 mins).")
+        .setName("エクササイズ全体の時間 (分)")
+        .setDesc("このエクササイズにかけた合計時間。セット数で等分して各セットの消費カロリーを計算します。")
         .addText((text) => {
           text.inputEl.type = "number";
           text.setValue(this.workoutDuration.toString());
@@ -210,6 +210,7 @@ export class LoggerModal extends Modal {
             const fileCache = this.app.metadataCache.getFileCache(file);
             const frontmatter = fileCache?.frontmatter;
 
+            let muscleChanged = false;
             if (frontmatter && frontmatter.target_muscle) {
               const targetMuscle = Array.isArray(frontmatter.target_muscle)
                 ? frontmatter.target_muscle[0]
@@ -217,6 +218,7 @@ export class LoggerModal extends Modal {
               if (targetMuscle && this.targetMuscleDropdown) {
                 this.targetMuscle = targetMuscle;
                 this.targetMuscleDropdown.setValue(targetMuscle);
+                muscleChanged = true;
               }
             }
 
@@ -225,6 +227,10 @@ export class LoggerModal extends Modal {
                 this.equipment = frontmatter.equipment;
                 this.equipmentDropdown.setValue(frontmatter.equipment);
               }
+            }
+
+            if (muscleChanged) {
+              this.refreshDynamicSections();
             }
           }
         });
@@ -439,15 +445,16 @@ export class LoggerModal extends Modal {
       await this.plugin.saveSettings();
 
       const mets = EQUIPMENT_METS[this.equipment] || 5.0;
-      const calories = calculateCalories(
+      const perSetDuration = this.workoutDuration / validSets.length;
+      const perSetCalories = calculateCalories(
         mets,
         this.bodyWeight,
-        this.workoutDuration / 60,
+        perSetDuration / 60,
       );
 
       extraData = {
-        duration: this.workoutDuration,
-        calories: calories,
+        duration: Math.round(perSetDuration * 10) / 10,
+        calories: perSetCalories,
       };
     }
 

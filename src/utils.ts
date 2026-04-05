@@ -5,7 +5,7 @@
  * @returns The total volume.
  */
 export function calculateVolume(weight: number, reps: number): number {
-  return weight * reps;
+  return Math.round(weight * reps);
 }
 
 /**
