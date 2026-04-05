@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import WorkoutLoggerPlugin from "./main";
+import { t } from "./i18n";
 
 export interface WorkoutLoggerSettings {
   exerciseFolder: string;
@@ -27,11 +28,12 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
 
   display(): void {
     const { containerEl } = this;
+    const i18n = t();
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Exercise Folder")
-      .setDesc("The folder where your exercise notes are stored.")
+      .setName(i18n.settingExerciseFolderName)
+      .setDesc(i18n.settingExerciseFolderDesc)
       .addText((text) =>
         text
           .setPlaceholder("e.g., Gym/Exercises")
@@ -43,10 +45,8 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Calculate Calories Burned")
-      .setDesc(
-        "Calculate calories burned based on METs, body weight, and workout duration.",
-      )
+      .setName(i18n.settingCalcCaloriesName)
+      .setDesc(i18n.settingCalcCaloriesDesc)
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.calculateCalories)
@@ -59,8 +59,8 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
 
     if (this.plugin.settings.calculateCalories) {
       new Setting(containerEl)
-        .setName("Default Body Weight (kg)")
-        .setDesc("Used for calorie calculation.")
+        .setName(i18n.settingBodyWeightName)
+        .setDesc(i18n.settingBodyWeightDesc)
         .addText((text) =>
           text
             .setPlaceholder("e.g., 60")
@@ -72,8 +72,8 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
         );
 
       new Setting(containerEl)
-        .setName("Default Body Fat Percentage (%)")
-        .setDesc("Logged alongside each workout entry to track body composition over time.")
+        .setName(i18n.settingBodyFatName)
+        .setDesc(i18n.settingBodyFatDesc)
         .addText((text) =>
           text
             .setPlaceholder("e.g., 20")
@@ -85,8 +85,8 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
         );
 
       new Setting(containerEl)
-        .setName("Body Metrics Note")
-        .setDesc("体重・体脂肪率を日次記録するノートのパス（カロリー計算オン時に使用）。")
+        .setName(i18n.settingBodyMetricsNoteName)
+        .setDesc(i18n.settingBodyMetricsNoteDesc)
         .addText((text) =>
           text
             .setPlaceholder("e.g., Gym/BodyMetrics")

@@ -10,6 +10,7 @@ import {
 import WorkoutLoggerPlugin from "./main";
 import { getOrCreateExerciseNote, appendLog, appendCardioLog, appendBodyMetrics } from "./file";
 import { EQUIPMENT_METS, calculateCalories, calculateWalkingCalorie } from "./utils";
+import { t } from "./i18n";
 
 const TARGET_MUSCLES = ["胸", "背中", "肩", "腕", "腹", "足", "有酸素"];
 const EQUIPMENT_TYPES = [
@@ -48,7 +49,8 @@ export class LoggerModal extends Modal {
   onOpen() {
     const { contentEl } = this;
     contentEl.empty();
-    contentEl.createEl("h1", { text: "🏋️‍♂️ Log Workout Set" });
+    const i18n = t();
+    contentEl.createEl("h1", { text: i18n.modalTitle });
 
     this.bodyWeight = this.plugin.settings.bodyWeight;
     this.bodyFatPercentage = this.plugin.settings.bodyFatPercentage;
@@ -87,9 +89,10 @@ export class LoggerModal extends Modal {
   }
 
   private renderCalorieInputs(containerEl: HTMLElement) {
+    const i18n = t();
     new Setting(containerEl)
-      .setName("Body Weight (kg)")
-      .setDesc("Used for calorie calculation. Syncs with plugin settings.")
+      .setName(i18n.bodyWeightLabel)
+      .setDesc(i18n.bodyWeightDesc)
       .addText((text) => {
         text.inputEl.type = "number";
         text.setValue(this.bodyWeight.toString());
@@ -99,10 +102,8 @@ export class LoggerModal extends Modal {
       });
 
     new Setting(containerEl)
-      .setName("Body Fat Percentage (%)")
-      .setDesc(
-        "Current body fat %. Logged with the entry and syncs with plugin settings.",
-      )
+      .setName(i18n.bodyFatLabel)
+      .setDesc(i18n.bodyFatDesc)
       .addText((text) => {
         text.inputEl.type = "number";
         text.setValue(this.bodyFatPercentage.toString());
@@ -113,8 +114,8 @@ export class LoggerModal extends Modal {
 
     if (!this.isCardioMode()) {
       new Setting(containerEl)
-        .setName("エクササイズ全体の時間 (分)")
-        .setDesc("このエクササイズにかけた合計時間。セット数で等分して各セットの消費カロリーを計算します。")
+        .setName(i18n.workoutDurationLabel)
+        .setDesc(i18n.workoutDurationDesc)
         .addText((text) => {
           text.inputEl.type = "number";
           text.setValue(this.workoutDuration.toString());
@@ -126,11 +127,12 @@ export class LoggerModal extends Modal {
   }
 
   private renderCardioInputs(containerEl: HTMLElement) {
+    const i18n = t();
     const card = containerEl.createDiv({ cls: "cardio-input-card" });
-    card.createEl("p", { cls: "cardio-input-card__label", text: "有酸素運動" });
+    card.createEl("p", { cls: "cardio-input-card__label", text: i18n.cardioSectionLabel });
 
     new Setting(card)
-      .setName("速度 (km/h)")
+      .setName(i18n.cardioSpeedLabel)
       .addText((text) => {
         text.inputEl.type = "number";
         text.inputEl.step = "0.1";
@@ -141,7 +143,7 @@ export class LoggerModal extends Modal {
       });
 
     new Setting(card)
-      .setName("傾斜 (%)")
+      .setName(i18n.cardioInclineLabel)
       .addText((text) => {
         text.inputEl.type = "number";
         text.inputEl.step = "0.5";
@@ -152,7 +154,7 @@ export class LoggerModal extends Modal {
       });
 
     new Setting(card)
-      .setName("時間 (分)")
+      .setName(i18n.cardioDurationLabel)
       .addText((text) => {
         text.inputEl.type = "number";
         text.setValue(this.cardioDuration > 0 ? this.cardioDuration.toString() : "");
@@ -166,13 +168,13 @@ export class LoggerModal extends Modal {
    * Render the Select/Text field for exercise name
    */
   private renderExerciseSelect(containerEl: HTMLElement) {
+    const i18n = t();
     new Setting(containerEl)
-      .setName("Exercise")
-      .setDesc("Select an existing exercise or type a new one to create it.")
+      .setName(i18n.exerciseLabel)
+      .setDesc(i18n.exerciseDesc)
       .addText((text) => {
-        text.setPlaceholder("e.g. Bench Press");
+        text.setPlaceholder(i18n.exercisePlaceholder);
 
-        // Populate datalist for autocomplete based on existing files in folder
         const dataListId = "exercises-list";
         let datalist = containerEl.querySelector(
           `#${dataListId}`,
@@ -241,9 +243,10 @@ export class LoggerModal extends Modal {
    * Render the dropdown for target muscle
    */
   private renderTargetMuscleSelect(containerEl: HTMLElement) {
+    const i18n = t();
     new Setting(containerEl)
-      .setName("Target Muscle")
-      .setDesc("Select the primary muscle group targeted.")
+      .setName(i18n.targetMuscleLabel)
+      .setDesc(i18n.targetMuscleDesc)
       .addDropdown((dropdown) => {
         this.targetMuscleDropdown = dropdown;
         TARGET_MUSCLES.forEach((muscle) => {
@@ -260,9 +263,10 @@ export class LoggerModal extends Modal {
    * Render the dropdown for equipment type
    */
   private renderEquipmentSelect(containerEl: HTMLElement) {
+    const i18n = t();
     new Setting(containerEl)
-      .setName("Equipment")
-      .setDesc("Select the equipment used.")
+      .setName(i18n.equipmentLabel)
+      .setDesc(i18n.equipmentDesc)
       .addDropdown((dropdown) => {
         this.equipmentDropdown = dropdown;
         EQUIPMENT_TYPES.forEach((equipment) => {
@@ -278,9 +282,10 @@ export class LoggerModal extends Modal {
    * Render the date picker for the log
    */
   private renderLogDatePicker(containerEl: HTMLElement) {
+    const i18n = t();
     new Setting(containerEl)
-      .setName("Log Date")
-      .setDesc("Select the date for the workout log.")
+      .setName(i18n.logDateLabel)
+      .setDesc(i18n.logDateDesc)
       .addText((text) => {
         text.inputEl.type = "date";
         text.setValue(this.logDate).onChange((value) => {
@@ -293,6 +298,7 @@ export class LoggerModal extends Modal {
    * Render the weight, reps, and set type inputs
    */
   private renderInputs(containerEl: HTMLElement) {
+    const i18n = t();
     const setsContainer = containerEl.createDiv({ cls: "sets-container" });
 
     const addSet = () => {
@@ -301,7 +307,7 @@ export class LoggerModal extends Modal {
 
       new Setting(setDiv)
         .setClass("set-input-block")
-        .setName(`Set ${setIndex + 1} - Weight (kg/lbs)`)
+        .setName(i18n.setWeight(setIndex + 1))
         .addText((text) => {
           text.inputEl.type = "number";
           text.onChange((value) => {
@@ -311,7 +317,7 @@ export class LoggerModal extends Modal {
 
       new Setting(setDiv)
         .setClass("set-input-block")
-        .setName(`Set ${setIndex + 1} - Reps`)
+        .setName(i18n.setReps(setIndex + 1))
         .addText((text) => {
           text.inputEl.type = "number";
           text.onChange((value) => {
@@ -321,7 +327,7 @@ export class LoggerModal extends Modal {
 
       new Setting(setDiv)
         .setClass("set-input-block")
-        .setName(`Set ${setIndex + 1} - RPE`)
+        .setName(i18n.setRpe(setIndex + 1))
         .addDropdown((dropdown) => {
           dropdown.addOption("", "-");
           for (let rpe = 6; rpe <= 10; rpe += 0.5) {
@@ -333,7 +339,7 @@ export class LoggerModal extends Modal {
           });
         });
 
-      const removeButton = setDiv.createEl("button", { text: "Remove Set" });
+      const removeButton = setDiv.createEl("button", { text: i18n.removeSet });
       removeButton.addEventListener("click", () => {
         this.sets.splice(setIndex, 1);
         setDiv.remove();
@@ -343,10 +349,9 @@ export class LoggerModal extends Modal {
       this.sets.push({ weight: 0, reps: 0, rpe: null });
     };
 
-    const addSetButton = containerEl.createEl("button", { text: "Add Set" });
+    const addSetButton = containerEl.createEl("button", { text: i18n.addSet });
     addSetButton.addEventListener("click", addSet);
 
-    // Initialize with one set
     this.sets = [];
     addSet();
   }
@@ -355,6 +360,7 @@ export class LoggerModal extends Modal {
    * Update set labels after adding/removing sets
    */
   private updateSetLabels(setsContainer: HTMLElement) {
+    const i18n = t();
     const setGroups = setsContainer.querySelectorAll(".set-input-group");
     setGroups.forEach((group, index) => {
       const weightSetting = group.querySelector(
@@ -366,10 +372,9 @@ export class LoggerModal extends Modal {
       const rpeSetting = group.querySelector(
         ".setting-item:nth-child(3) .setting-name",
       );
-      if (weightSetting)
-        weightSetting.textContent = `Set ${index + 1} - Weight (kg/lbs)`;
-      if (repsSetting) repsSetting.textContent = `Set ${index + 1} - Reps`;
-      if (rpeSetting) rpeSetting.textContent = `Set ${index + 1} - RPE`;
+      if (weightSetting) weightSetting.textContent = i18n.setWeight(index + 1);
+      if (repsSetting) repsSetting.textContent = i18n.setReps(index + 1);
+      if (rpeSetting) rpeSetting.textContent = i18n.setRpe(index + 1);
     });
   }
 
@@ -377,6 +382,7 @@ export class LoggerModal extends Modal {
    * Render log / cancel buttons
    */
   private renderButtons(containerEl: HTMLElement) {
+    const i18n = t();
     const buttonContainer = containerEl.createDiv({
       cls: "modal-button-container",
     });
@@ -385,13 +391,13 @@ export class LoggerModal extends Modal {
     buttonContainer.style.gap = "10px";
     buttonContainer.style.marginTop = "20px";
 
-    const cancelButton = buttonContainer.createEl("button", { text: "Cancel" });
+    const cancelButton = buttonContainer.createEl("button", { text: i18n.cancel });
     cancelButton.addEventListener("click", () => {
       this.close();
     });
 
     const submitButton = buttonContainer.createEl("button", {
-      text: "Log Set",
+      text: i18n.logSet,
       cls: "mod-cta",
     });
     submitButton.addEventListener("click", async () => {
@@ -400,8 +406,9 @@ export class LoggerModal extends Modal {
   }
 
   async submit() {
+    const i18n = t();
     if (!this.exerciseName) {
-      new Notice("⚠️ Please enter an exercise name!");
+      new Notice(i18n.noticeNoExercise);
       return;
     }
 
@@ -423,15 +430,16 @@ export class LoggerModal extends Modal {
       this.close();
     } catch (error) {
       console.error(error);
-      new Notice("❌ Failed to log the set. Check console for details.");
+      new Notice(i18n.noticeFailed);
     }
   }
 
   private async submitStrength(file: TFile) {
+    const i18n = t();
     const validSets = this.sets.filter((s) => s.weight > 0 && s.reps > 0);
 
     if (validSets.length === 0) {
-      new Notice("⚠️ Enter at least one valid set (weight and reps > 0)!");
+      new Notice(i18n.noticeNoValidSet);
       return;
     }
 
@@ -477,12 +485,13 @@ export class LoggerModal extends Modal {
     const setsSummary = validSets
       .map((s) => `${s.weight}kg x ${s.reps}reps`)
       .join(", ");
-    new Notice(`✅ Logged ${setsSummary} for ${this.exerciseName}`);
+    new Notice(i18n.noticeLoggedStrength(setsSummary, this.exerciseName));
   }
 
   private async submitCardio(file: TFile) {
+    const i18n = t();
     if (this.cardioDuration <= 0) {
-      new Notice("⚠️ 時間（分）を入力してください！");
+      new Notice(i18n.noticeNoDuration);
       return;
     }
 
@@ -518,7 +527,7 @@ export class LoggerModal extends Modal {
     }
 
     new Notice(
-      `✅ Logged ${this.cardioDuration}min cardio (${Math.round(calories)} kcal) for ${this.exerciseName}`,
+      i18n.noticeLoggedCardio(this.cardioDuration, Math.round(calories), this.exerciseName),
     );
   }
 

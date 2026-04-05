@@ -1,5 +1,6 @@
 import { ItemView, WorkspaceLeaf, TFile, TFolder, normalizePath } from "obsidian";
 import WorkoutLoggerPlugin from "./main";
+import { t } from "./i18n";
 
 export const DASHBOARD_VIEW_TYPE = "workout-dashboard";
 
@@ -202,12 +203,13 @@ export class DashboardView extends ItemView {
     root.empty();
     root.addClass("wl-dashboard");
 
+    const i18n = t();
     // Header
     const header = root.createDiv({ cls: "wl-dashboard__header" });
-    header.createEl("h2", { text: "Workout Dashboard" });
+    header.createEl("h2", { text: i18n.dashboardTitle });
     const refreshBtn = header.createEl("button", {
       cls: "wl-dashboard__refresh",
-      text: "↻ 更新",
+      text: i18n.dashboardRefresh,
     });
     refreshBtn.addEventListener("click", async () => {
       await this.loadAll();
@@ -224,11 +226,12 @@ export class DashboardView extends ItemView {
   }
 
   private renderPeriodTabs(container: HTMLElement): void {
+    const i18n = t();
     const tabs: { label: string; value: Period }[] = [
-      { label: "週間", value: "7d" },
-      { label: "月間", value: "30d" },
-      { label: "年間", value: "365d" },
-      { label: "全期間", value: "all" },
+      { label: i18n.periodWeek, value: "7d" },
+      { label: i18n.periodMonth, value: "30d" },
+      { label: i18n.periodYear, value: "365d" },
+      { label: i18n.periodAll, value: "all" },
     ];
     const tabBar = container.createDiv({ cls: "wl-dashboard__tabs" });
     for (const tab of tabs) {
@@ -244,13 +247,14 @@ export class DashboardView extends ItemView {
   }
 
   private renderBodyMetricsSection(container: HTMLElement): void {
+    const i18n = t();
     const section = container.createDiv({ cls: "wl-dashboard__section" });
-    section.createEl("h3", { text: "身体記録" });
+    section.createEl("h3", { text: i18n.sectionBodyMetrics });
 
     if (this.bodyMetricsData.length === 0) {
       section.createDiv({
         cls: "wl-dashboard__empty",
-        text: "データがありません。カロリー計算をオンにして体重を記録してください。",
+        text: i18n.bodyMetricsEmpty,
       });
       return;
     }
@@ -267,32 +271,34 @@ export class DashboardView extends ItemView {
     );
 
     const chartsRow = section.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, weightPoints, "体重", "#4a9eff", "kg");
+    this.renderLineChart(chartsRow, weightPoints, i18n.chartWeight, "#4a9eff", "kg");
     if (fatPoints.length > 0) {
-      this.renderLineChart(chartsRow, fatPoints, "体脂肪率", "#ff6b6b", "%");
+      this.renderLineChart(chartsRow, fatPoints, i18n.chartBodyFat, "#ff6b6b", "%");
     }
   }
 
   private renderCaloriesSection(container: HTMLElement): void {
     if (this.caloriesData.length === 0) return;
 
+    const i18n = t();
     const section = container.createDiv({ cls: "wl-dashboard__section" });
-    section.createEl("h3", { text: "消費カロリー" });
+    section.createEl("h3", { text: i18n.sectionCalories });
 
     const points = this.filterByPeriod(this.caloriesData, this.currentPeriod);
     const chartsRow = section.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, points, "消費カロリー（日次合計）", "#f59e0b", "kcal");
+    this.renderLineChart(chartsRow, points, i18n.chartCaloriesLabel, "#f59e0b", "kcal");
   }
 
   private renderExerciseSection(container: HTMLElement): void {
+    const i18n = t();
     const section = container.createDiv({ cls: "wl-dashboard__section" });
     const sectionHeader = section.createDiv({ cls: "wl-dashboard__section-header" });
-    sectionHeader.createEl("h3", { text: "エクササイズ記録" });
+    sectionHeader.createEl("h3", { text: i18n.sectionExercise });
 
     if (this.exerciseNames.length === 0) {
       section.createDiv({
         cls: "wl-dashboard__empty",
-        text: "データがありません。トレーニングを記録してください。",
+        text: i18n.exerciseEmpty,
       });
       return;
     }
@@ -317,10 +323,11 @@ export class DashboardView extends ItemView {
   }
 
   private renderExerciseCharts(container: HTMLElement): void {
+    const i18n = t();
     if (!this.selectedExercise || this.exerciseData.length === 0) {
       container.createDiv({
         cls: "wl-dashboard__empty",
-        text: "このエクササイズのデータがありません。",
+        text: i18n.exerciseDataEmpty,
       });
       return;
     }
@@ -335,8 +342,8 @@ export class DashboardView extends ItemView {
     );
 
     const chartsRow = container.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, rmPoints, "推定1RM", "#a78bfa", "kg");
-    this.renderLineChart(chartsRow, volPoints, "総ボリューム", "#34d399", "kg");
+    this.renderLineChart(chartsRow, rmPoints, i18n.chartEstimated1RM, "#a78bfa", "kg");
+    this.renderLineChart(chartsRow, volPoints, i18n.chartTotalVolume, "#34d399", "kg");
   }
 
   // ─── SVG Line Chart ────────────────────────────────────────────────────────
@@ -352,7 +359,7 @@ export class DashboardView extends ItemView {
     wrapper.createEl("p", { cls: "wl-chart__label", text: label });
 
     if (points.length === 0) {
-      wrapper.createDiv({ cls: "wl-chart__empty", text: "データなし" });
+      wrapper.createDiv({ cls: "wl-chart__empty", text: t().chartNoData });
       return;
     }
 

@@ -1,110 +1,116 @@
 # 🏋️‍♂️ Obsidian Workout Logger
 
-**Workout Logger** は、日常の筋トレセッションをObsidian内で効率的に記録し、Dataviewプラグインを活用して簡単に集計・分析を行えるように設計されたObsidian用プラグインです。
+**Workout Logger** is an Obsidian plugin designed to efficiently log your daily strength training sessions and visualize your progress through a built-in dashboard. Log entries are written in a [Dataview](https://github.com/blacksmithgu/obsidian-dataview)-compatible inline metadata format, making it easy to build custom queries on top of your data.
 
-## ✨ 主な機能
+## ✨ Features
 
-1. **モーダルUIによる記録**:
-   - `Open Logger` コマンドやリボンアイコン（ダンベル）から素早く記録画面を呼び出せます。
-2. **種目（Exercise）のオートコンプリート**:
-   - 指定したフォルダ（デフォルト: `Gym/Exercises/`）内の既存ファイル名から種目を検索・選択できます。
-3. **新規種目の自動作成**:
-   - 入力した種目のノートが存在しない場合、テンプレート（YAMLフロントマター付き）を含んだ新規ノートを自動生成します。
-4. **自動計算**:
-   - 入力された重量(Weight)と回数(Reps)から、**ボリューム**（`Weight × Reps`）と**1RMの推定値**（Epley公式に基づく）を自動計算します。
-5. **RPE（主観的運動強度）の記録**:
-   - 各セットに RPE（6〜10、0.5刻み）をドロップダウンで入力できます。未選択の場合はログに出力されません。
-6. **カロリー消費の計算**（オプション）:
-   - METs・体重・ワークアウト時間からカロリー消費量を自動計算します。
-   - 設定からオン/オフを切り替えられます。
-7. **体重・体脂肪率の日次記録**（カロリー計算オン時）:
-   - トレーニングのログ保存時に、体重・体脂肪率を専用ノートへ日次で自動記録します。
-   - 同じ日の記録がすでに存在する場合は重複して追記しません。
-8. **Dataview親和性の高いフォーマット**:
-   - 記録内容はDataviewのインラインメタデータ形式でノート末尾に追記されるため、クエリで簡単に集計できます。
+1. **Dashboard view** — A dedicated sidebar view (opened via the ribbon or `Open Dashboard` command) showing charts for body metrics, calories burned, and per-exercise performance across selectable time ranges (Week / Month / Year / All Time).
+2. **Logger modal** — Quickly open the log form with the `Open Logger` command to record a workout session.
+3. **Strength training logging**:
+   - Log multiple sets per session, each with weight, reps, and an optional RPE (6–10 in 0.5 steps).
+   - Volume (`weight × reps`, rounded to integer) and estimated 1RM (Epley formula) are calculated automatically.
+4. **Cardio logging** — When the target muscle is set to `有酸素` (Cardio), the form switches to speed (km/h), incline (%), and duration (min) inputs. Calories are calculated using a VO₂-based walking formula.
+5. **Exercise autocomplete** — Existing notes in the exercise folder are suggested as you type. Selecting a note pre-fills the target muscle and equipment fields from frontmatter.
+6. **Auto-create exercise notes** — If the exercise note does not exist, it is created automatically with a YAML frontmatter template.
+7. **Calorie calculation** (optional) — Enable in settings to record duration and calorie data per set. Total exercise duration is divided equally across sets.
+8. **Daily body metrics logging** (when calorie calculation is enabled) — Body weight and body fat percentage are appended to a dedicated note once per day. Duplicate entries on the same date are skipped automatically.
+9. **Internationalization** — UI language follows the Obsidian display language. Supported: English (default), Japanese, Chinese, Korean.
 
-## 🚀 インストール・セットアップ手順
+## 🚀 Installation
 
-本プラグインはまだコミュニティプラグインとして公開されていないため、ローカルでビルドしてインストールする必要があります。
+This plugin is not yet available in the Obsidian community plugin registry. Install it manually by building from source.
 
-### 手順
+### Steps
 
-1. **リポジトリのクローン・配置**:
-   - ObsidianのVault内にある `.obsidian/plugins/` フォルダ配下に、新しく `workout-logger` などの名前でフォルダを作成し、本プロジェクトのファイル一式（またはリポジトリ）を配置します。
-     （例： `YourVault/.obsidian/plugins/workout-logger/`）
+1. **Clone and place the repository**
 
-2. **依存パッケージのインストール**:
-   - ターミナルで配置したフォルダ（上記の場所）へ移動し、以下のコマンドを実行します。
+   Create a folder (e.g. `workout-logger`) inside your vault's `.obsidian/plugins/` directory and place the project files there:
 
-     ```bash
-     npm install
-     ```
+   ```text
+   YourVault/.obsidian/plugins/workout-logger/
+   ```
 
-3. **プラグインのビルド**:
-   - 以下のコマンドを実行して、TypeScriptコードをJavaScript(`main.js`)へビルドします。
+2. **Install dependencies**
 
-     ```bash
-     npm run build
-     ```
+   ```bash
+   npm install
+   ```
 
-   - 成功すると、フォルダ内に `main.js` が生成されます（`manifest.json` と同じ階層）。
+3. **Build the plugin**
 
-4. **Obsidianでのプラグイン有効化**:
-   - Obsidianを開き、「設定 (Settings)」 > 「コミュニティプラグイン (Community plugins)」に移動します。
-   - インストール済みプラグイン一覧にある「Workout Logger」をオンにして有効化してください。
-   - ※ オフラインでのインストール後はじめて読み込む場合、「コミュニティプラグインのセーフモードをオフ」にする必要があります。
+   ```bash
+   npm run build
+   ```
 
-## ⚙️ 設定 (Settings)
+   This produces `main.js` in the same directory as `manifest.json`.
 
-Obsidianの設定画面の「Workout Logger」タブから、以下の設定を変更できます。
+4. **Enable the plugin in Obsidian**
 
-| 設定項目 | 説明 | デフォルト |
+   Go to **Settings → Community plugins**, find **Workout Logger**, and toggle it on. If this is your first community plugin, you may need to disable Safe Mode first.
+
+## ⚙️ Settings
+
+Open **Settings → Workout Logger** to configure the following options.
+
+| Setting | Description | Default |
 | --- | --- | --- |
-| **Exercise Folder** | 種目ノートを保存するフォルダパス | `Gym/Exercises` |
-| **Calculate Calories Burned** | カロリー計算機能のオン/オフ | オフ |
-| **Default Body Weight (kg)** | カロリー計算に使用する体重 ※カロリー計算オン時のみ表示 | `60` |
-| **Default Body Fat Percentage (%)** | 体脂肪率の初期値 ※カロリー計算オン時のみ表示 | `0` |
-| **Body Metrics Note** | 体重・体脂肪率を日次記録するノートのパス ※カロリー計算オン時のみ表示 | `Gym/BodyMetrics` |
+| **Exercise Folder** | Vault folder where exercise notes are stored | `Gym/Exercises` |
+| **Calculate Calories Burned** | Toggle calorie calculation on/off | Off |
+| **Default Body Weight (kg)** | Body weight used for calorie calculation *(shown when calorie calculation is on)* | `60` |
+| **Default Body Fat Percentage (%)** | Body fat % recorded with each entry *(shown when calorie calculation is on)* | `0` |
+| **Body Metrics Note** | Path to the note where daily body weight and body fat % are recorded *(shown when calorie calculation is on)* | `Gym/BodyMetrics` |
 
-## 📝 記録フォーマット
+## 📝 Log Format
 
-### 種目ノート（例: `Gym/Exercises/Bench Press.md`）
+### Exercise notes — e.g. `Gym/Exercises/Bench Press.md`
 
-新規作成時はYAMLフロントマター付きのテンプレートが自動生成されます。
+New exercise notes are created with the following YAML frontmatter template:
 
 ```yaml
 ---
-target_muscle: ["胸"]
-equipment: "フリーウェイト"
+target_muscle: ["Chest"]
+equipment: "Barbell"
 is_assisted: false
 ---
 
 # Bench Press
 
 ## Log
-- [date:: 2026-04-04] | [weight:: 80] kg x [reps:: 5] | [volume:: 400] | [rm:: 93.3] | [rpe:: 8.5]
-- [date:: 2026-04-04] | [weight:: 80] kg x [reps:: 5] | [volume:: 400] | [rm:: 93.3] | [rpe:: 8]
-- [date:: 2026-04-04] | [weight:: 75] kg x [reps:: 8] | [volume:: 600] | [rm:: 100] | [duration:: 45] | [calories:: 315]
 ```
 
-各フィールドの意味:
+**Strength log entry format:**
 
-| フィールド | 内容 |
+```text
+- [date:: 2026-04-05] | [weight:: 80] kg x [reps:: 5] | [volume:: 400] | [rm:: 93.3] | [rpe:: 8.5]
+- [date:: 2026-04-05] | [weight:: 80] kg x [reps:: 5] | [volume:: 400] | [rm:: 93.3] | [duration:: 10] | [calories:: 52]
+```
+
+**Cardio log entry format:**
+
+```text
+- [date:: 2026-04-05] | [speed:: 6] | [incline:: 2] | [duration:: 30] | [calories:: 180]
+```
+
+**Field reference:**
+
+| Field | Description |
 | --- | --- |
-| `date` | トレーニング日（YYYY-MM-DD） |
-| `weight` | 使用重量（kg または lbs） |
-| `reps` | 回数 |
-| `volume` | ボリューム（`weight × reps`） |
-| `rm` | 推定1RM（Epley公式） |
-| `rpe` | 主観的運動強度（6〜10、0.5刻み）。未選択時は省略 |
-| `duration` | 運動時間（分）。カロリー計算オン時のみ |
-| `calories` | 消費カロリー（kcal）。カロリー計算オン時のみ |
+| `date` | Workout date (YYYY-MM-DD) |
+| `weight` | Weight used per set (kg or lbs) |
+| `reps` | Repetitions per set |
+| `volume` | Volume = `weight × reps` (rounded to integer) |
+| `rm` | Estimated 1RM using the Epley formula |
+| `rpe` | Rate of Perceived Exertion (6–10, 0.5 steps). Omitted if not selected |
+| `duration` | Time in minutes. Per-set value (total duration ÷ number of sets). Only when calorie calculation is enabled |
+| `calories` | Estimated calories burned. Only when calorie calculation is enabled |
+| `speed` | Cardio speed in km/h |
+| `incline` | Treadmill incline in % |
 
-### 体重・体脂肪率ノート（例: `Gym/BodyMetrics.md`）
+### Body metrics note — e.g. `Gym/BodyMetrics.md`
 
-カロリー計算がオンの場合、トレーニングログ保存時に自動作成・追記されます。同じ日の記録が既に存在する場合は追記されません。
+When calorie calculation is enabled, body weight and body fat % are automatically appended once per day when a workout is logged. If an entry for that date already exists, it is skipped.
 
-```markdown
+```text
 # Body Metrics
 
 ## Log
@@ -112,11 +118,11 @@ is_assisted: false
 - [date:: 2026-04-05] | [body_weight:: 69.8] | [body_fat_percentage:: 14.9]
 ```
 
-## 📊 Dataviewクエリ例
+## 📊 Dataview Query Examples
 
-Dataviewプラグインをインストール＆有効化することで、以下のクエリを活用できます。
+Install and enable the [Dataview](https://github.com/blacksmithgu/obsidian-dataview) community plugin to query your workout data.
 
-### 日別の最高1RM・総ボリューム
+### Best 1RM and total volume by date
 
 ```dataview
 TABLE
@@ -128,14 +134,14 @@ GROUP BY date
 SORT date DESC
 ```
 
-### 種目ごとの詳細履歴（種目ノート内に貼り付けて使用）
+### Per-exercise history (paste inside an exercise note)
 
 ```dataview
 TABLE
-  max(rows.weight) AS "weight(kg)",
-  max(rows.reps) AS "reps",
-  max(rows.volume) AS "volume",
-  max(rows.rm) AS "1rm",
+  max(rows.weight) AS "Weight (kg)",
+  max(rows.reps) AS "Reps",
+  max(rows.volume) AS "Volume",
+  max(rows.rm) AS "1RM",
   max(rows.rpe) AS "RPE"
 FROM "Gym/Exercises"
 FLATTEN file.lists AS L
@@ -144,18 +150,18 @@ GROUP BY L.date
 SORT L.date DESC
 ```
 
-### 体重・体脂肪率の推移
+### Body weight and body fat over time
 
 ```dataview
 TABLE
-  body_weight AS "体重(kg)",
-  body_fat_percentage AS "体脂肪率(%)"
+  body_weight AS "Weight (kg)",
+  body_fat_percentage AS "Body Fat (%)"
 FROM "Gym/BodyMetrics"
 FLATTEN file.lists AS L
 WHERE L.date
 SORT L.date DESC
 ```
 
-## ライセンス
+## License
 
 MIT
