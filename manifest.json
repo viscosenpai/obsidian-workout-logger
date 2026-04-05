@@ -1,10 +1,10 @@
 {
-  "id": "obsidian-workout-logger",
+  "id": "workout-logger",
   "name": "Workout Logger",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
   "description": "Log weight training sessions to Obsidian notes in a Dataview-friendly format.",
-  "author": "Antigravity",
+  "author": "viscosenpai",
   "authorUrl": "",
   "isDesktopOnly": false
 }
