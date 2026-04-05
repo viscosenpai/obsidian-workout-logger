@@ -26,23 +26,65 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
+  /** Attach a <datalist> to an input element with the given options. */
+  private attachDatalist(
+    inputEl: HTMLInputElement,
+    listId: string,
+    options: string[],
+  ): void {
+    // Reuse existing datalist if already present (e.g. on re-render)
+    let datalist = this.containerEl.querySelector(
+      `#${listId}`,
+    ) as HTMLDataListElement | null;
+    if (!datalist) {
+      datalist = this.containerEl.createEl("datalist", {
+        attr: { id: listId },
+      });
+    } else {
+      datalist.empty();
+    }
+    for (const opt of options) {
+      datalist.createEl("option", { value: opt });
+    }
+    inputEl.setAttribute("list", listId);
+  }
+
+  /** All folder paths in the vault, sorted. */
+  private folderOptions(): string[] {
+    return this.app.vault
+      .getAllFolders()
+      .map((f) => f.path)
+      .filter((p) => p !== "/")
+      .sort();
+  }
+
+  /** All markdown file paths in the vault (without .md), sorted. */
+  private noteOptions(): string[] {
+    return this.app.vault
+      .getMarkdownFiles()
+      .map((f) => f.path.replace(/\.md$/, ""))
+      .sort();
+  }
+
   display(): void {
     const { containerEl } = this;
     const i18n = t();
     containerEl.empty();
 
+    // Exercise Folder — suggest vault folders
     new Setting(containerEl)
       .setName(i18n.settingExerciseFolderName)
       .setDesc(i18n.settingExerciseFolderDesc)
-      .addText((text) =>
+      .addText((text) => {
+        this.attachDatalist(text.inputEl, "wl-folder-list", this.folderOptions());
         text
           .setPlaceholder("e.g., Gym/Exercises")
           .setValue(this.plugin.settings.exerciseFolder)
           .onChange(async (value) => {
             this.plugin.settings.exerciseFolder = value;
             await this.plugin.saveSettings();
-          }),
-      );
+          });
+      });
 
     new Setting(containerEl)
       .setName(i18n.settingCalcCaloriesName)
@@ -84,18 +126,20 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
             }),
         );
 
+      // Body Metrics Note — suggest vault notes
       new Setting(containerEl)
         .setName(i18n.settingBodyMetricsNoteName)
         .setDesc(i18n.settingBodyMetricsNoteDesc)
-        .addText((text) =>
+        .addText((text) => {
+          this.attachDatalist(text.inputEl, "wl-note-list", this.noteOptions());
           text
             .setPlaceholder("e.g., Gym/BodyMetrics")
             .setValue(this.plugin.settings.bodyMetricsNote)
             .onChange(async (value) => {
               this.plugin.settings.bodyMetricsNote = value;
               await this.plugin.saveSettings();
-            }),
-        );
+            });
+        });
     }
   }
 }
