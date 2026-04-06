@@ -10,9 +10,11 @@ const ko: Translations = {
   // Target muscle
   targetMuscleLabel: "목표 근육",
   targetMuscleDesc: "주요 목표 근육 그룹을 선택하세요.",
+  targetMuscleOptions: ["가슴", "등", "어깨", "팔", "복근", "하체", "유산소"],
   // Equipment
   equipmentLabel: "기구",
   equipmentDesc: "사용하는 기구를 선택하세요.",
+  equipmentTypeOptions: ["바벨", "덤벨", "머신", "맨몸", "기타"],
   // Log date
   logDateLabel: "기록 날짜",
   logDateDesc: "운동 기록 날짜를 선택하세요.",

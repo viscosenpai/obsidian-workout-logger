@@ -10,9 +10,11 @@ const en: Translations = {
   // Target muscle
   targetMuscleLabel: "Target muscle",
   targetMuscleDesc: "Select the primary muscle group targeted.",
+  targetMuscleOptions: ["Chest", "Back", "Shoulder", "Arms", "Abs", "Legs", "Cardio"],
   // Equipment
   equipmentLabel: "Equipment",
   equipmentDesc: "Select the equipment used.",
+  equipmentTypeOptions: ["Barbell", "Dumbbell", "Machine", "Bodyweight", "Other"],
   // Log date
   logDateLabel: "Log date",
   logDateDesc: "Select the date for the workout log.",

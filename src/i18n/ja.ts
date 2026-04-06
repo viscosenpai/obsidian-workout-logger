@@ -10,9 +10,11 @@ const ja: Translations = {
   // Target muscle
   targetMuscleLabel: "対象筋肉",
   targetMuscleDesc: "主に鍛える筋肉グループを選択してください。",
+  targetMuscleOptions: ["胸", "背中", "肩", "腕", "腹", "足", "有酸素"],
   // Equipment
   equipmentLabel: "器具",
   equipmentDesc: "使用する器具を選択してください。",
+  equipmentTypeOptions: ["バーベル", "ダンベル", "マシン", "自重", "その他"],
   // Log date
   logDateLabel: "記録日",
   logDateDesc: "トレーニングログの日付を選択してください。",

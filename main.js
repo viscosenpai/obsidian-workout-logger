@@ -39,9 +39,11 @@ var en = {
   // Target muscle
   targetMuscleLabel: "Target muscle",
   targetMuscleDesc: "Select the primary muscle group targeted.",
+  targetMuscleOptions: ["Chest", "Back", "Shoulder", "Arms", "Abs", "Legs", "Cardio"],
   // Equipment
   equipmentLabel: "Equipment",
   equipmentDesc: "Select the equipment used.",
+  equipmentTypeOptions: ["Barbell", "Dumbbell", "Machine", "Bodyweight", "Other"],
   // Log date
   logDateLabel: "Log date",
   logDateDesc: "Select the date for the workout log.",
@@ -117,9 +119,11 @@ var ja = {
   // Target muscle
   targetMuscleLabel: "\u5BFE\u8C61\u7B4B\u8089",
   targetMuscleDesc: "\u4E3B\u306B\u935B\u3048\u308B\u7B4B\u8089\u30B0\u30EB\u30FC\u30D7\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
+  targetMuscleOptions: ["\u80F8", "\u80CC\u4E2D", "\u80A9", "\u8155", "\u8179", "\u8DB3", "\u6709\u9178\u7D20"],
   // Equipment
   equipmentLabel: "\u5668\u5177",
   equipmentDesc: "\u4F7F\u7528\u3059\u308B\u5668\u5177\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
+  equipmentTypeOptions: ["\u30D0\u30FC\u30D9\u30EB", "\u30C0\u30F3\u30D9\u30EB", "\u30DE\u30B7\u30F3", "\u81EA\u91CD", "\u305D\u306E\u4ED6"],
   // Log date
   logDateLabel: "\u8A18\u9332\u65E5",
   logDateDesc: "\u30C8\u30EC\u30FC\u30CB\u30F3\u30B0\u30ED\u30B0\u306E\u65E5\u4ED8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
@@ -195,9 +199,11 @@ var zh = {
   // Target muscle
   targetMuscleLabel: "\u76EE\u6807\u808C\u7FA4",
   targetMuscleDesc: "\u9009\u62E9\u672C\u6B21\u8BAD\u7EC3\u7684\u4E3B\u8981\u808C\u7FA4\u3002",
+  targetMuscleOptions: ["\u80F8", "\u80CC", "\u80A9", "\u624B\u81C2", "\u8179", "\u817F", "\u6709\u6C27"],
   // Equipment
   equipmentLabel: "\u5668\u68B0",
   equipmentDesc: "\u9009\u62E9\u4F7F\u7528\u7684\u5668\u68B0\u3002",
+  equipmentTypeOptions: ["\u6760\u94C3", "\u54D1\u94C3", "\u5668\u68B0", "\u81EA\u91CD", "\u5176\u4ED6"],
   // Log date
   logDateLabel: "\u8BB0\u5F55\u65E5\u671F",
   logDateDesc: "\u9009\u62E9\u672C\u6B21\u8BAD\u7EC3\u7684\u65E5\u671F\u3002",
@@ -273,9 +279,11 @@ var ko = {
   // Target muscle
   targetMuscleLabel: "\uBAA9\uD45C \uADFC\uC721",
   targetMuscleDesc: "\uC8FC\uC694 \uBAA9\uD45C \uADFC\uC721 \uADF8\uB8F9\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+  targetMuscleOptions: ["\uAC00\uC2B4", "\uB4F1", "\uC5B4\uAE68", "\uD314", "\uBCF5\uADFC", "\uD558\uCCB4", "\uC720\uC0B0\uC18C"],
   // Equipment
   equipmentLabel: "\uAE30\uAD6C",
   equipmentDesc: "\uC0AC\uC6A9\uD558\uB294 \uAE30\uAD6C\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+  equipmentTypeOptions: ["\uBC14\uBCA8", "\uB364\uBCA8", "\uBA38\uC2E0", "\uB9E8\uBAB8", "\uAE30\uD0C0"],
   // Log date
   logDateLabel: "\uAE30\uB85D \uB0A0\uC9DC",
   logDateDesc: "\uC6B4\uB3D9 \uAE30\uB85D \uB0A0\uC9DC\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
@@ -452,11 +460,11 @@ function calculate1RM(weight, reps) {
   return Math.round(oneRM * 10) / 10;
 }
 var EQUIPMENT_METS = {
-  \u30D5\u30EA\u30FC\u30A6\u30A7\u30A4\u30C8: 6,
-  \u30C0\u30F3\u30D9\u30EB: 6,
-  \u30DE\u30B7\u30F3: 5,
-  \u81EA\u91CD: 3.8,
-  \u305D\u306E\u4ED6: 5
+  Barbell: 6,
+  Dumbbell: 6,
+  Machine: 5,
+  Bodyweight: 3.8,
+  Other: 5
 };
 function calculateCalories(mets, weight, duration) {
   return Math.round(mets * weight * duration * 1.05);
@@ -571,13 +579,13 @@ async function appendCardioLog(app, file, logDate, speed, incline, duration, cal
 }
 
 // src/LoggerModal.ts
-var TARGET_MUSCLES = ["\u80F8", "\u80CC\u4E2D", "\u80A9", "\u8155", "\u8179", "\u8DB3", "\u6709\u9178\u7D20"];
+var TARGET_MUSCLES = ["Chest", "Back", "Shoulder", "Arms", "Abs", "Legs", "Cardio"];
 var EQUIPMENT_TYPES = [
-  "\u30D5\u30EA\u30FC\u30A6\u30A7\u30A4\u30C8",
-  "\u30C0\u30F3\u30D9\u30EB",
-  "\u30DE\u30B7\u30F3",
-  "\u81EA\u91CD",
-  "\u305D\u306E\u4ED6"
+  "Barbell",
+  "Dumbbell",
+  "Machine",
+  "Bodyweight",
+  "Other"
 ];
 var LoggerModal = class extends import_obsidian3.Modal {
   constructor(app, plugin) {
@@ -622,7 +630,7 @@ var LoggerModal = class extends import_obsidian3.Modal {
     this.renderButtons(contentEl);
   }
   isCardioMode() {
-    return this.targetMuscle === "\u6709\u9178\u7D20";
+    return this.targetMuscle === "Cardio";
   }
   refreshDynamicSections() {
     if (!this.calorieContainer || !this.inputsContainer)
@@ -757,8 +765,9 @@ var LoggerModal = class extends import_obsidian3.Modal {
     const i18n = t();
     new import_obsidian3.Setting(containerEl).setName(i18n.targetMuscleLabel).setDesc(i18n.targetMuscleDesc).addDropdown((dropdown) => {
       this.targetMuscleDropdown = dropdown;
-      TARGET_MUSCLES.forEach((muscle) => {
-        dropdown.addOption(muscle, muscle);
+      TARGET_MUSCLES.forEach((muscle, idx) => {
+        var _a;
+        dropdown.addOption(muscle, (_a = i18n.targetMuscleOptions[idx]) != null ? _a : muscle);
       });
       dropdown.setValue(this.targetMuscle).onChange((value) => {
         this.targetMuscle = value;
@@ -773,11 +782,13 @@ var LoggerModal = class extends import_obsidian3.Modal {
     const i18n = t();
     new import_obsidian3.Setting(containerEl).setName(i18n.equipmentLabel).setDesc(i18n.equipmentDesc).addDropdown((dropdown) => {
       this.equipmentDropdown = dropdown;
-      EQUIPMENT_TYPES.forEach((equipment) => {
-        dropdown.addOption(equipment, equipment);
+      EQUIPMENT_TYPES.forEach((equipment, idx) => {
+        var _a;
+        dropdown.addOption(equipment, (_a = i18n.equipmentTypeOptions[idx]) != null ? _a : equipment);
       });
       dropdown.setValue(this.equipment).onChange((value) => {
         this.equipment = value;
+        this.refreshDynamicSections();
       });
     });
   }
@@ -799,15 +810,18 @@ var LoggerModal = class extends import_obsidian3.Modal {
   renderInputs(containerEl) {
     const i18n = t();
     const setsContainer = containerEl.createDiv({ cls: "sets-container" });
+    const isBodyweight = () => this.equipment === "Bodyweight";
     const addSet = () => {
       const setIndex = this.sets.length;
       const setDiv = setsContainer.createDiv({ cls: "set-input-group" });
-      new import_obsidian3.Setting(setDiv).setClass("set-input-block").setName(i18n.setWeight(setIndex + 1)).addText((text) => {
-        text.inputEl.type = "number";
-        text.onChange((value) => {
-          this.sets[setIndex].weight = parseFloat(value) || 0;
+      if (!isBodyweight()) {
+        new import_obsidian3.Setting(setDiv).setClass("set-input-block").setName(i18n.setWeight(setIndex + 1)).addText((text) => {
+          text.inputEl.type = "number";
+          text.onChange((value) => {
+            this.sets[setIndex].weight = parseFloat(value) || 0;
+          });
         });
-      });
+      }
       new import_obsidian3.Setting(setDiv).setClass("set-input-block").setName(i18n.setReps(setIndex + 1)).addText((text) => {
         text.inputEl.type = "number";
         text.onChange((value) => {
@@ -830,7 +844,7 @@ var LoggerModal = class extends import_obsidian3.Modal {
         setDiv.remove();
         this.updateSetLabels(setsContainer);
       });
-      this.sets.push({ weight: 0, reps: 0, rpe: null });
+      this.sets.push({ weight: isBodyweight() ? 1 : 0, reps: 0, rpe: null });
     };
     const addSetButton = containerEl.createEl("button", { text: i18n.addSet });
     addSetButton.addEventListener("click", addSet);
@@ -842,23 +856,23 @@ var LoggerModal = class extends import_obsidian3.Modal {
    */
   updateSetLabels(setsContainer) {
     const i18n = t();
+    const isBodyweight = this.equipment === "Bodyweight";
     const setGroups = setsContainer.querySelectorAll(".set-input-group");
     setGroups.forEach((group, index) => {
-      const weightSetting = group.querySelector(
-        ".setting-item:first-child .setting-name"
-      );
-      const repsSetting = group.querySelector(
-        ".setting-item:nth-child(2) .setting-name"
-      );
-      const rpeSetting = group.querySelector(
-        ".setting-item:nth-child(3) .setting-name"
-      );
-      if (weightSetting)
-        weightSetting.textContent = i18n.setWeight(index + 1);
-      if (repsSetting)
-        repsSetting.textContent = i18n.setReps(index + 1);
-      if (rpeSetting)
-        rpeSetting.textContent = i18n.setRpe(index + 1);
+      const items = group.querySelectorAll(".setting-item");
+      if (isBodyweight) {
+        if (items[0])
+          items[0].querySelector(".setting-name").textContent = i18n.setReps(index + 1);
+        if (items[1])
+          items[1].querySelector(".setting-name").textContent = i18n.setRpe(index + 1);
+      } else {
+        if (items[0])
+          items[0].querySelector(".setting-name").textContent = i18n.setWeight(index + 1);
+        if (items[1])
+          items[1].querySelector(".setting-name").textContent = i18n.setReps(index + 1);
+        if (items[2])
+          items[2].querySelector(".setting-name").textContent = i18n.setRpe(index + 1);
+      }
     });
   }
   /**
@@ -940,7 +954,8 @@ var LoggerModal = class extends import_obsidian3.Modal {
         this.bodyFatPercentage
       );
     }
-    const setsSummary = validSets.map((s) => `${s.weight}kg x ${s.reps}reps`).join(", ");
+    const isBodyweight = this.equipment === "Bodyweight";
+    const setsSummary = validSets.map((s) => isBodyweight ? `BW x ${s.reps}reps` : `${s.weight}kg x ${s.reps}reps`).join(", ");
     new import_obsidian3.Notice(i18n.noticeLoggedStrength(setsSummary, this.exerciseName));
   }
   async submitCardio(file) {

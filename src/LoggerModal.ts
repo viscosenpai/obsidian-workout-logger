@@ -12,13 +12,13 @@ import { getOrCreateExerciseNote, appendLog, appendCardioLog, appendBodyMetrics 
 import { EQUIPMENT_METS, calculateCalories, calculateWalkingCalorie } from "./utils";
 import { t } from "./i18n";
 
-const TARGET_MUSCLES = ["胸", "背中", "肩", "腕", "腹", "足", "有酸素"];
+const TARGET_MUSCLES = ["Chest", "Back", "Shoulder", "Arms", "Abs", "Legs", "Cardio"];
 const EQUIPMENT_TYPES = [
-  "フリーウェイト",
-  "ダンベル",
-  "マシン",
-  "自重",
-  "その他",
+  "Barbell",
+  "Dumbbell",
+  "Machine",
+  "Bodyweight",
+  "Other",
 ];
 
 export class LoggerModal extends Modal {
@@ -69,7 +69,7 @@ export class LoggerModal extends Modal {
   }
 
   private isCardioMode(): boolean {
-    return this.targetMuscle === "有酸素";
+    return this.targetMuscle === "Cardio";
   }
 
   private refreshDynamicSections(): void {
@@ -249,8 +249,8 @@ export class LoggerModal extends Modal {
       .setDesc(i18n.targetMuscleDesc)
       .addDropdown((dropdown) => {
         this.targetMuscleDropdown = dropdown;
-        TARGET_MUSCLES.forEach((muscle) => {
-          dropdown.addOption(muscle, muscle);
+        TARGET_MUSCLES.forEach((muscle, idx) => {
+          dropdown.addOption(muscle, i18n.targetMuscleOptions[idx] ?? muscle);
         });
         dropdown.setValue(this.targetMuscle).onChange((value) => {
           this.targetMuscle = value;
@@ -269,11 +269,12 @@ export class LoggerModal extends Modal {
       .setDesc(i18n.equipmentDesc)
       .addDropdown((dropdown) => {
         this.equipmentDropdown = dropdown;
-        EQUIPMENT_TYPES.forEach((equipment) => {
-          dropdown.addOption(equipment, equipment);
+        EQUIPMENT_TYPES.forEach((equipment, idx) => {
+          dropdown.addOption(equipment, i18n.equipmentTypeOptions[idx] ?? equipment);
         });
         dropdown.setValue(this.equipment).onChange((value) => {
           this.equipment = value;
+          this.refreshDynamicSections();
         });
       });
   }
@@ -301,19 +302,23 @@ export class LoggerModal extends Modal {
     const i18n = t();
     const setsContainer = containerEl.createDiv({ cls: "sets-container" });
 
+    const isBodyweight = () => this.equipment === "Bodyweight";
+
     const addSet = () => {
       const setIndex = this.sets.length;
       const setDiv = setsContainer.createDiv({ cls: "set-input-group" });
 
-      new Setting(setDiv)
-        .setClass("set-input-block")
-        .setName(i18n.setWeight(setIndex + 1))
-        .addText((text) => {
-          text.inputEl.type = "number";
-          text.onChange((value) => {
-            this.sets[setIndex].weight = parseFloat(value) || 0;
+      if (!isBodyweight()) {
+        new Setting(setDiv)
+          .setClass("set-input-block")
+          .setName(i18n.setWeight(setIndex + 1))
+          .addText((text) => {
+            text.inputEl.type = "number";
+            text.onChange((value) => {
+              this.sets[setIndex].weight = parseFloat(value) || 0;
+            });
           });
-        });
+      }
 
       new Setting(setDiv)
         .setClass("set-input-block")
@@ -346,7 +351,7 @@ export class LoggerModal extends Modal {
         this.updateSetLabels(setsContainer);
       });
 
-      this.sets.push({ weight: 0, reps: 0, rpe: null });
+      this.sets.push({ weight: isBodyweight() ? 1 : 0, reps: 0, rpe: null });
     };
 
     const addSetButton = containerEl.createEl("button", { text: i18n.addSet });
@@ -361,20 +366,19 @@ export class LoggerModal extends Modal {
    */
   private updateSetLabels(setsContainer: HTMLElement) {
     const i18n = t();
+    const isBodyweight = this.equipment === "Bodyweight";
     const setGroups = setsContainer.querySelectorAll(".set-input-group");
     setGroups.forEach((group, index) => {
-      const weightSetting = group.querySelector(
-        ".setting-item:first-child .setting-name",
-      );
-      const repsSetting = group.querySelector(
-        ".setting-item:nth-child(2) .setting-name",
-      );
-      const rpeSetting = group.querySelector(
-        ".setting-item:nth-child(3) .setting-name",
-      );
-      if (weightSetting) weightSetting.textContent = i18n.setWeight(index + 1);
-      if (repsSetting) repsSetting.textContent = i18n.setReps(index + 1);
-      if (rpeSetting) rpeSetting.textContent = i18n.setRpe(index + 1);
+      const items = group.querySelectorAll(".setting-item");
+      if (isBodyweight) {
+        // No weight field: items[0]=reps, items[1]=rpe
+        if (items[0]) items[0].querySelector(".setting-name")!.textContent = i18n.setReps(index + 1);
+        if (items[1]) items[1].querySelector(".setting-name")!.textContent = i18n.setRpe(index + 1);
+      } else {
+        if (items[0]) items[0].querySelector(".setting-name")!.textContent = i18n.setWeight(index + 1);
+        if (items[1]) items[1].querySelector(".setting-name")!.textContent = i18n.setReps(index + 1);
+        if (items[2]) items[2].querySelector(".setting-name")!.textContent = i18n.setRpe(index + 1);
+      }
     });
   }
 
@@ -478,8 +482,9 @@ export class LoggerModal extends Modal {
       );
     }
 
+    const isBodyweight = this.equipment === "Bodyweight";
     const setsSummary = validSets
-      .map((s) => `${s.weight}kg x ${s.reps}reps`)
+      .map((s) => isBodyweight ? `BW x ${s.reps}reps` : `${s.weight}kg x ${s.reps}reps`)
       .join(", ");
     new Notice(i18n.noticeLoggedStrength(setsSummary, this.exerciseName));
   }

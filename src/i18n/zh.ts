@@ -10,9 +10,11 @@ const zh: Translations = {
   // Target muscle
   targetMuscleLabel: "目标肌群",
   targetMuscleDesc: "选择本次训练的主要肌群。",
+  targetMuscleOptions: ["胸", "背", "肩", "手臂", "腹", "腿", "有氧"],
   // Equipment
   equipmentLabel: "器械",
   equipmentDesc: "选择使用的器械。",
+  equipmentTypeOptions: ["杠铃", "哑铃", "器械", "自重", "其他"],
   // Log date
   logDateLabel: "记录日期",
   logDateDesc: "选择本次训练的日期。",

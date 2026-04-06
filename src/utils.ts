@@ -27,11 +27,11 @@ export function calculate1RM(weight: number, reps: number): number {
  * Equipment types mapped to estimated METs values.
  */
 export const EQUIPMENT_METS: Record<string, number> = {
-  フリーウェイト: 6.0,
-  ダンベル: 6.0,
-  マシン: 5.0,
-  自重: 3.8,
-  その他: 5.0,
+  Barbell: 6.0,
+  Dumbbell: 6.0,
+  Machine: 5.0,
+  Bodyweight: 3.8,
+  Other: 5.0,
 };
 
 /**

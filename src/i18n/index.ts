@@ -13,9 +13,11 @@ export interface Translations {
   // Target muscle
   targetMuscleLabel: string;
   targetMuscleDesc: string;
+  targetMuscleOptions: string[]; // labels for ["Chest","Back","Shoulder","Arms","Abs","Legs","Cardio"]
   // Equipment
   equipmentLabel: string;
   equipmentDesc: string;
+  equipmentTypeOptions: string[]; // labels for ["Barbell","Dumbbell","Machine","Bodyweight","Other"]
   // Log date
   logDateLabel: string;
   logDateDesc: string;
