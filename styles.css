@@ -201,11 +201,17 @@
   max-width: 240px;
 }
 
-/* Charts grid: always 2 columns for consistent chart sizing */
+/* Charts grid: 2 columns on wide screens, 1 column on narrow screens */
 .wl-dashboard__charts {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .wl-dashboard__charts {
+    grid-template-columns: 1fr;
+  }
 }
 
 .wl-dashboard__empty {

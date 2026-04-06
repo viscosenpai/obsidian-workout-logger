@@ -6,7 +6,7 @@ const en: Translations = {
   // Exercise
   exerciseLabel: "Exercise",
   exerciseDesc: "Select an existing exercise or type a new one to create it.",
-  exercisePlaceholder: "E.g. bench press",
+  exercisePlaceholder: "E.G. Bench press",
   // Target muscle
   targetMuscleLabel: "Target muscle",
   targetMuscleDesc: "Select the primary muscle group targeted.",
@@ -80,7 +80,7 @@ const en: Translations = {
     "Path to the note where daily body weight and body fat % are recorded (used when calorie calculation is enabled).",
   // Dashboard
   dashboardTitle: "Workout dashboard",
-  dashboardRefresh: "↻ Refresh",
+  dashboardRefresh: "Refresh",
   periodWeek: "Week",
   periodMonth: "Month",
   periodYear: "Year",
@@ -97,6 +97,8 @@ const en: Translations = {
   exerciseDataEmpty: "No data for this exercise.",
   chartEstimated1RM: "Estimated 1rm",
   chartTotalVolume: "Total volume",
+  chartCardioDuration: "Duration (min)",
+  chartCardioDistance: "Distance (km)",
   chartNoData: "No data",
 };
 

@@ -78,6 +78,8 @@ export interface Translations {
   exerciseDataEmpty: string;
   chartEstimated1RM: string;
   chartTotalVolume: string;
+  chartCardioDuration: string;
+  chartCardioDistance: string;
   chartNoData: string;
 }
 

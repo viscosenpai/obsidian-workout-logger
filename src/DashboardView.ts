@@ -19,6 +19,14 @@ interface ExerciseEntry {
   calories: number;
 }
 
+interface CardioEntry {
+  date: string;
+  speed: number;
+  incline: number;
+  duration: number;
+  calories: number;
+}
+
 interface BodyMetricsEntry {
   date: string;
   bodyWeight: number;
@@ -43,6 +51,7 @@ export class DashboardView extends ItemView {
   private exerciseNames: string[] = [];
   private bodyMetricsData: BodyMetricsEntry[] = [];
   private exerciseData: ExerciseEntry[] = [];
+  private cardioData: CardioEntry[] = [];
   private caloriesData: DayPoint[] = [];
 
   constructor(leaf: WorkspaceLeaf, plugin: WorkoutLoggerPlugin) {
@@ -81,6 +90,7 @@ export class DashboardView extends ItemView {
     this.bodyMetricsData = await this.loadBodyMetrics();
     if (this.selectedExercise) {
       this.exerciseData = await this.loadExerciseData(this.selectedExercise);
+      this.cardioData = await this.loadCardioData(this.selectedExercise);
     }
     this.caloriesData = await this.loadAllCalories();
   }
@@ -175,6 +185,36 @@ export class DashboardView extends ItemView {
     return results.sort((a, b) => a.date.localeCompare(b.date));
   }
 
+  private async loadCardioData(exerciseName: string): Promise<CardioEntry[]> {
+    const folderPath = this.plugin.settings.exerciseFolder;
+    const filePath = normalizePath(`${folderPath}/${exerciseName}.md`);
+    const file = this.app.vault.getAbstractFileByPath(filePath);
+    if (!(file instanceof TFile)) return [];
+
+    const content = await this.app.vault.read(file);
+    const results: CardioEntry[] = [];
+    const re =
+      /\[date:: ([^\]]+)\].*\[speed:: ([^\]]+)\].*\[incline:: ([^\]]+)\].*\[duration:: ([^\]]+)\].*\[calories:: ([^\]]+)\]/;
+
+    for (const line of content.split("\n")) {
+      const m = re.exec(line);
+      if (!m) continue;
+      const speed = parseFloat(m[2]);
+      const incline = parseFloat(m[3]);
+      const duration = parseFloat(m[4]);
+      const calories = parseFloat(m[5]);
+      if (isNaN(speed) || isNaN(duration)) continue;
+      results.push({
+        date: m[1].trim(),
+        speed: isNaN(speed) ? 0 : speed,
+        incline: isNaN(incline) ? 0 : incline,
+        duration: isNaN(duration) ? 0 : duration,
+        calories: isNaN(calories) ? 0 : calories,
+      });
+    }
+    return results.sort((a, b) => a.date.localeCompare(b.date));
+  }
+
   // ─── Aggregation & Filtering ───────────────────────────────────────────────
 
   private aggregateMax(entries: ExerciseEntry[], field: "rm"): DayPoint[] {
@@ -194,6 +234,27 @@ export class DashboardView extends ItemView {
     }
     return Array.from(map.entries())
       .map(([date, value]) => ({ date, value }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  private aggregateSumCardio(entries: CardioEntry[], field: "duration"): DayPoint[] {
+    const map = new Map<string, number>();
+    for (const e of entries) {
+      map.set(e.date, (map.get(e.date) ?? 0) + e[field]);
+    }
+    return Array.from(map.entries())
+      .map(([date, value]) => ({ date, value }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  private aggregateCardioDistance(entries: CardioEntry[]): DayPoint[] {
+    const map = new Map<string, number>();
+    for (const e of entries) {
+      const distance = (e.speed * e.duration) / 60;
+      map.set(e.date, (map.get(e.date) ?? 0) + distance);
+    }
+    return Array.from(map.entries())
+      .map(([date, value]) => ({ date, value: Math.round(value * 100) / 100 }))
       .sort((a, b) => a.date.localeCompare(b.date));
   }
 
@@ -347,8 +408,12 @@ export class DashboardView extends ItemView {
 
     select.addEventListener("change", () => {
       this.selectedExercise = select.value;
-      void this.loadExerciseData(this.selectedExercise).then((data) => {
-        this.exerciseData = data;
+      void Promise.all([
+        this.loadExerciseData(this.selectedExercise),
+        this.loadCardioData(this.selectedExercise),
+      ]).then(([exerciseData, cardioData]) => {
+        this.exerciseData = exerciseData;
+        this.cardioData = cardioData;
         chartsArea.empty();
         this.renderExerciseCharts(chartsArea);
       });
@@ -357,7 +422,9 @@ export class DashboardView extends ItemView {
 
   private renderExerciseCharts(container: HTMLElement): void {
     const i18n = t();
-    if (!this.selectedExercise || this.exerciseData.length === 0) {
+    const isCardio = this.cardioData.length > 0;
+
+    if (!this.selectedExercise || (!isCardio && this.exerciseData.length === 0)) {
       container.createDiv({
         cls: "wl-dashboard__empty",
         text: i18n.exerciseDataEmpty,
@@ -365,30 +432,33 @@ export class DashboardView extends ItemView {
       return;
     }
 
-    const rmPoints = this.filterByPeriod(
-      this.aggregateMax(this.exerciseData, "rm"),
-      this.currentPeriod,
-    );
-    const volPoints = this.filterByPeriod(
-      this.aggregateSum(this.exerciseData, "volume"),
-      this.currentPeriod,
-    );
-
     const chartsRow = container.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(
-      chartsRow,
-      rmPoints,
-      i18n.chartEstimated1RM,
-      "#a78bfa",
-      "kg",
-    );
-    this.renderLineChart(
-      chartsRow,
-      volPoints,
-      i18n.chartTotalVolume,
-      "#34d399",
-      "kg",
-    );
+
+    if (isCardio) {
+      // Duration per day (sum)
+      const durationPoints = this.filterByPeriod(
+        this.aggregateSumCardio(this.cardioData, "duration"),
+        this.currentPeriod,
+      );
+      // Distance per day (sum): speed (km/h) * duration (min) / 60
+      const distancePoints = this.filterByPeriod(
+        this.aggregateCardioDistance(this.cardioData),
+        this.currentPeriod,
+      );
+      this.renderLineChart(chartsRow, durationPoints, i18n.chartCardioDuration, "#f59e0b", "min");
+      this.renderLineChart(chartsRow, distancePoints, i18n.chartCardioDistance, "#34d399", "km");
+    } else {
+      const rmPoints = this.filterByPeriod(
+        this.aggregateMax(this.exerciseData, "rm"),
+        this.currentPeriod,
+      );
+      const volPoints = this.filterByPeriod(
+        this.aggregateSum(this.exerciseData, "volume"),
+        this.currentPeriod,
+      );
+      this.renderLineChart(chartsRow, rmPoints, i18n.chartEstimated1RM, "#a78bfa", "kg");
+      this.renderLineChart(chartsRow, volPoints, i18n.chartTotalVolume, "#34d399", "kg");
+    }
   }
 
   // ─── SVG Line Chart ────────────────────────────────────────────────────────

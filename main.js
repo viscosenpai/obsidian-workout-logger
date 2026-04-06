@@ -31,19 +31,33 @@ var import_obsidian = require("obsidian");
 // src/i18n/en.ts
 var en = {
   // Modal
-  modalTitle: "\u{1F3CB}\uFE0F\u200D\u2642\uFE0F Log Workout Set",
+  modalTitle: "Log workout set",
   // Exercise
   exerciseLabel: "Exercise",
   exerciseDesc: "Select an existing exercise or type a new one to create it.",
-  exercisePlaceholder: "e.g. Bench Press",
+  exercisePlaceholder: "E.G. Bench press",
   // Target muscle
   targetMuscleLabel: "Target muscle",
   targetMuscleDesc: "Select the primary muscle group targeted.",
-  targetMuscleOptions: ["Chest", "Back", "Shoulder", "Arms", "Abs", "Legs", "Cardio"],
+  targetMuscleOptions: [
+    "Chest",
+    "Back",
+    "Shoulder",
+    "Arms",
+    "Abs",
+    "Legs",
+    "Cardio"
+  ],
   // Equipment
   equipmentLabel: "Equipment",
   equipmentDesc: "Select the equipment used.",
-  equipmentTypeOptions: ["Barbell", "Dumbbell", "Machine", "Bodyweight", "Other"],
+  equipmentTypeOptions: [
+    "Barbell",
+    "Dumbbell",
+    "Machine",
+    "Bodyweight",
+    "Other"
+  ],
   // Log date
   logDateLabel: "Log date",
   logDateDesc: "Select the date for the workout log.",
@@ -69,12 +83,12 @@ var en = {
   cancel: "Cancel",
   logSet: "Log set",
   // Notices
-  noticeNoExercise: "\u26A0\uFE0F Please enter an exercise name!",
-  noticeNoValidSet: "\u26A0\uFE0F Enter at least one valid set (weight and reps > 0)!",
-  noticeNoDuration: "\u26A0\uFE0F Please enter a duration (minutes)!",
-  noticeLoggedStrength: (summary, exercise) => `\u2705 Logged ${summary} for ${exercise}`,
-  noticeLoggedCardio: (duration, calories, exercise) => `\u2705 Logged ${duration}min cardio (${calories} kcal) for ${exercise}`,
-  noticeFailed: "\u274C Failed to log the set. Check console for details.",
+  noticeNoExercise: "Please enter an exercise name!",
+  noticeNoValidSet: "Enter at least one valid set (weight and reps > 0)!",
+  noticeNoDuration: "Please enter a duration (minutes)!",
+  noticeLoggedStrength: (summary, exercise) => `Logged ${summary} for ${exercise}`,
+  noticeLoggedCardio: (duration, calories, exercise) => `Logged ${duration}min cardio (${calories} kcal) for ${exercise}`,
+  noticeFailed: "Failed to log the set. Check console for details.",
   // Settings
   settingExerciseFolderName: "Exercise folder",
   settingExerciseFolderDesc: "The folder where your exercise notes are stored.",
@@ -88,7 +102,7 @@ var en = {
   settingBodyMetricsNoteDesc: "Path to the note where daily body weight and body fat % are recorded (used when calorie calculation is enabled).",
   // Dashboard
   dashboardTitle: "Workout dashboard",
-  dashboardRefresh: "\u21BB Refresh",
+  dashboardRefresh: "Refresh",
   periodWeek: "Week",
   periodMonth: "Month",
   periodYear: "Year",
@@ -102,8 +116,10 @@ var en = {
   sectionExercise: "Exercise log",
   exerciseEmpty: "No exercises found. Log a workout to get started.",
   exerciseDataEmpty: "No data for this exercise.",
-  chartEstimated1RM: "Estimated 1RM",
+  chartEstimated1RM: "Estimated 1rm",
   chartTotalVolume: "Total volume",
+  chartCardioDuration: "Duration (min)",
+  chartCardioDistance: "Distance (km)",
   chartNoData: "No data"
 };
 var en_default = en;
@@ -111,7 +127,7 @@ var en_default = en;
 // src/i18n/ja.ts
 var ja = {
   // Modal
-  modalTitle: "\u{1F3CB}\uFE0F\u200D\u2642\uFE0F \u30C8\u30EC\u30FC\u30CB\u30F3\u30B0\u3092\u8A18\u9332",
+  modalTitle: "\u30C8\u30EC\u30FC\u30CB\u30F3\u30B0\u3092\u8A18\u9332",
   // Exercise
   exerciseLabel: "\u30A8\u30AF\u30B5\u30B5\u30A4\u30BA",
   exerciseDesc: "\u65E2\u5B58\u306E\u30A8\u30AF\u30B5\u30B5\u30A4\u30BA\u3092\u9078\u629E\u3059\u308B\u304B\u3001\u65B0\u3057\u3044\u540D\u524D\u3092\u5165\u529B\u3057\u3066\u4F5C\u6210\u3057\u307E\u3059\u3002",
@@ -149,11 +165,11 @@ var ja = {
   cancel: "\u30AD\u30E3\u30F3\u30BB\u30EB",
   logSet: "\u8A18\u9332\u3059\u308B",
   // Notices
-  noticeNoExercise: "\u26A0\uFE0F \u30A8\u30AF\u30B5\u30B5\u30A4\u30BA\u540D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF01",
-  noticeNoValidSet: "\u26A0\uFE0F \u6709\u52B9\u306A\u30BB\u30C3\u30C8\u3092\u5C11\u306A\u304F\u3068\u30821\u3064\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044 (\u91CD\u91CF\u3068\u56DE\u6570\u304C0\u3088\u308A\u5927\u304D\u3044)\uFF01",
-  noticeNoDuration: "\u26A0\uFE0F \u6642\u9593\uFF08\u5206\uFF09\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF01",
-  noticeLoggedStrength: (summary, exercise) => `\u2705 ${exercise} \u3092\u8A18\u9332\u3057\u307E\u3057\u305F: ${summary}`,
-  noticeLoggedCardio: (duration, calories, exercise) => `\u2705 ${exercise} \u306E\u6709\u9178\u7D20\u904B\u52D5\u3092\u8A18\u9332\u3057\u307E\u3057\u305F: ${duration}\u5206 (${calories} kcal)`,
+  noticeNoExercise: "\u30A8\u30AF\u30B5\u30B5\u30A4\u30BA\u540D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF01",
+  noticeNoValidSet: "\u6709\u52B9\u306A\u30BB\u30C3\u30C8\u3092\u5C11\u306A\u304F\u3068\u30821\u3064\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044 (\u91CD\u91CF\u3068\u56DE\u6570\u304C0\u3088\u308A\u5927\u304D\u3044)\uFF01",
+  noticeNoDuration: "\u6642\u9593\uFF08\u5206\uFF09\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF01",
+  noticeLoggedStrength: (summary, exercise) => `${exercise} \u3092\u8A18\u9332\u3057\u307E\u3057\u305F: ${summary}`,
+  noticeLoggedCardio: (duration, calories, exercise) => `${exercise} \u306E\u6709\u9178\u7D20\u904B\u52D5\u3092\u8A18\u9332\u3057\u307E\u3057\u305F: ${duration}\u5206 (${calories} kcal)`,
   noticeFailed: "\u274C \u8A18\u9332\u306B\u5931\u6557\u3057\u307E\u3057\u305F\u3002\u30B3\u30F3\u30BD\u30FC\u30EB\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
   // Settings
   settingExerciseFolderName: "\u30A8\u30AF\u30B5\u30B5\u30A4\u30BA\u30D5\u30A9\u30EB\u30C0",
@@ -168,7 +184,7 @@ var ja = {
   settingBodyMetricsNoteDesc: "\u4F53\u91CD\u30FB\u4F53\u8102\u80AA\u7387\u3092\u65E5\u6B21\u8A18\u9332\u3059\u308B\u30CE\u30FC\u30C8\u306E\u30D1\u30B9\uFF08\u30AB\u30ED\u30EA\u30FC\u8A08\u7B97\u30AA\u30F3\u6642\u306B\u4F7F\u7528\uFF09\u3002",
   // Dashboard
   dashboardTitle: "\u30EF\u30FC\u30AF\u30A2\u30A6\u30C8\u30C0\u30C3\u30B7\u30E5\u30DC\u30FC\u30C9",
-  dashboardRefresh: "\u21BB \u66F4\u65B0",
+  dashboardRefresh: "\u66F4\u65B0",
   periodWeek: "\u9031\u9593",
   periodMonth: "\u6708\u9593",
   periodYear: "\u5E74\u9593",
@@ -184,6 +200,8 @@ var ja = {
   exerciseDataEmpty: "\u3053\u306E\u30A8\u30AF\u30B5\u30B5\u30A4\u30BA\u306E\u30C7\u30FC\u30BF\u304C\u3042\u308A\u307E\u305B\u3093\u3002",
   chartEstimated1RM: "\u63A8\u5B9A1RM",
   chartTotalVolume: "\u7DCF\u30DC\u30EA\u30E5\u30FC\u30E0",
+  chartCardioDuration: "\u904B\u52D5\u6642\u9593 (\u5206)",
+  chartCardioDistance: "\u8DDD\u96E2 (km)",
   chartNoData: "\u30C7\u30FC\u30BF\u306A\u3057"
 };
 var ja_default = ja;
@@ -191,7 +209,7 @@ var ja_default = ja;
 // src/i18n/zh.ts
 var zh = {
   // Modal
-  modalTitle: "\u{1F3CB}\uFE0F\u200D\u2642\uFE0F \u8BB0\u5F55\u8BAD\u7EC3\u7EC4",
+  modalTitle: "\u8BB0\u5F55\u8BAD\u7EC3\u7EC4",
   // Exercise
   exerciseLabel: "\u8BAD\u7EC3\u52A8\u4F5C",
   exerciseDesc: "\u9009\u62E9\u5DF2\u6709\u52A8\u4F5C\uFF0C\u6216\u8F93\u5165\u65B0\u540D\u79F0\u4EE5\u521B\u5EFA\u3002",
@@ -229,11 +247,11 @@ var zh = {
   cancel: "\u53D6\u6D88",
   logSet: "\u8BB0\u5F55",
   // Notices
-  noticeNoExercise: "\u26A0\uFE0F \u8BF7\u8F93\u5165\u8BAD\u7EC3\u52A8\u4F5C\u540D\u79F0\uFF01",
-  noticeNoValidSet: "\u26A0\uFE0F \u8BF7\u81F3\u5C11\u8F93\u5165\u4E00\u7EC4\u6709\u6548\u6570\u636E\uFF08\u91CD\u91CF\u548C\u6B21\u6570\u5747\u5927\u4E8E0\uFF09\uFF01",
-  noticeNoDuration: "\u26A0\uFE0F \u8BF7\u8F93\u5165\u65F6\u957F\uFF08\u5206\u949F\uFF09\uFF01",
-  noticeLoggedStrength: (summary, exercise) => `\u2705 \u5DF2\u8BB0\u5F55 ${exercise}\uFF1A${summary}`,
-  noticeLoggedCardio: (duration, calories, exercise) => `\u2705 \u5DF2\u8BB0\u5F55 ${exercise} \u7684\u6709\u6C27\u8FD0\u52A8\uFF1A${duration}\u5206\u949F (${calories} kcal)`,
+  noticeNoExercise: "\u8BF7\u8F93\u5165\u8BAD\u7EC3\u52A8\u4F5C\u540D\u79F0\uFF01",
+  noticeNoValidSet: "\u8BF7\u81F3\u5C11\u8F93\u5165\u4E00\u7EC4\u6709\u6548\u6570\u636E\uFF08\u91CD\u91CF\u548C\u6B21\u6570\u5747\u5927\u4E8E0\uFF09\uFF01",
+  noticeNoDuration: "\u8BF7\u8F93\u5165\u65F6\u957F\uFF08\u5206\u949F\uFF09\uFF01",
+  noticeLoggedStrength: (summary, exercise) => `\u5DF2\u8BB0\u5F55 ${exercise}\uFF1A${summary}`,
+  noticeLoggedCardio: (duration, calories, exercise) => `\u5DF2\u8BB0\u5F55 ${exercise} \u7684\u6709\u6C27\u8FD0\u52A8\uFF1A${duration}\u5206\u949F (${calories} kcal)`,
   noticeFailed: "\u274C \u8BB0\u5F55\u5931\u8D25\uFF0C\u8BF7\u67E5\u770B\u63A7\u5236\u53F0\u3002",
   // Settings
   settingExerciseFolderName: "\u8BAD\u7EC3\u6587\u4EF6\u5939",
@@ -248,7 +266,7 @@ var zh = {
   settingBodyMetricsNoteDesc: "\u6BCF\u65E5\u8BB0\u5F55\u4F53\u91CD\u548C\u4F53\u8102\u7387\u7684\u7B14\u8BB0\u8DEF\u5F84\uFF08\u542F\u7528\u5361\u8DEF\u91CC\u8BA1\u7B97\u65F6\u4F7F\u7528\uFF09\u3002",
   // Dashboard
   dashboardTitle: "\u8BAD\u7EC3\u4EEA\u8868\u76D8",
-  dashboardRefresh: "\u21BB \u5237\u65B0",
+  dashboardRefresh: "\u5237\u65B0",
   periodWeek: "\u672C\u5468",
   periodMonth: "\u672C\u6708",
   periodYear: "\u672C\u5E74",
@@ -264,6 +282,8 @@ var zh = {
   exerciseDataEmpty: "\u8BE5\u52A8\u4F5C\u6682\u65E0\u6570\u636E\u3002",
   chartEstimated1RM: "\u9884\u4F301RM",
   chartTotalVolume: "\u603B\u8BAD\u7EC3\u91CF",
+  chartCardioDuration: "\u8FD0\u52A8\u65F6\u957F (\u5206\u949F)",
+  chartCardioDistance: "\u8DDD\u79BB (km)",
   chartNoData: "\u6682\u65E0\u6570\u636E"
 };
 var zh_default = zh;
@@ -271,7 +291,7 @@ var zh_default = zh;
 // src/i18n/ko.ts
 var ko = {
   // Modal
-  modalTitle: "\u{1F3CB}\uFE0F\u200D\u2642\uFE0F \uC6B4\uB3D9 \uC138\uD2B8 \uAE30\uB85D",
+  modalTitle: "\uC6B4\uB3D9 \uC138\uD2B8 \uAE30\uB85D",
   // Exercise
   exerciseLabel: "\uC6B4\uB3D9",
   exerciseDesc: "\uAE30\uC874 \uC6B4\uB3D9\uC744 \uC120\uD0DD\uD558\uAC70\uB098 \uC0C8 \uC774\uB984\uC744 \uC785\uB825\uD558\uC5EC \uC0DD\uC131\uD558\uC138\uC694.",
@@ -309,11 +329,11 @@ var ko = {
   cancel: "\uCDE8\uC18C",
   logSet: "\uAE30\uB85D",
   // Notices
-  noticeNoExercise: "\u26A0\uFE0F \uC6B4\uB3D9 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694!",
-  noticeNoValidSet: "\u26A0\uFE0F \uC720\uD6A8\uD55C \uC138\uD2B8\uB97C \uCD5C\uC18C \uD558\uB098 \uC785\uB825\uD558\uC138\uC694 (\uBB34\uAC8C\uC640 \uD69F\uC218 \uBAA8\uB450 0\uBCF4\uB2E4 \uCEE4\uC57C \uD569\uB2C8\uB2E4)!",
-  noticeNoDuration: "\u26A0\uFE0F \uC2DC\uAC04(\uBD84)\uC744 \uC785\uB825\uD558\uC138\uC694!",
-  noticeLoggedStrength: (summary, exercise) => `\u2705 ${exercise} \uAE30\uB85D \uC644\uB8CC: ${summary}`,
-  noticeLoggedCardio: (duration, calories, exercise) => `\u2705 ${exercise} \uC720\uC0B0\uC18C \uC6B4\uB3D9 \uAE30\uB85D \uC644\uB8CC: ${duration}\uBD84 (${calories} kcal)`,
+  noticeNoExercise: "\uC6B4\uB3D9 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694!",
+  noticeNoValidSet: "\uC720\uD6A8\uD55C \uC138\uD2B8\uB97C \uCD5C\uC18C \uD558\uB098 \uC785\uB825\uD558\uC138\uC694 (\uBB34\uAC8C\uC640 \uD69F\uC218 \uBAA8\uB450 0\uBCF4\uB2E4 \uCEE4\uC57C \uD569\uB2C8\uB2E4)!",
+  noticeNoDuration: "\uC2DC\uAC04(\uBD84)\uC744 \uC785\uB825\uD558\uC138\uC694!",
+  noticeLoggedStrength: (summary, exercise) => `${exercise} \uAE30\uB85D \uC644\uB8CC: ${summary}`,
+  noticeLoggedCardio: (duration, calories, exercise) => `${exercise} \uC720\uC0B0\uC18C \uC6B4\uB3D9 \uAE30\uB85D \uC644\uB8CC: ${duration}\uBD84 (${calories} kcal)`,
   noticeFailed: "\u274C \uAE30\uB85D\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uCF58\uC194\uC744 \uD655\uC778\uD558\uC138\uC694.",
   // Settings
   settingExerciseFolderName: "\uC6B4\uB3D9 \uD3F4\uB354",
@@ -328,7 +348,7 @@ var ko = {
   settingBodyMetricsNoteDesc: "\uCCB4\uC911\uACFC \uCCB4\uC9C0\uBC29\uB960\uC744 \uC77C\uBCC4\uB85C \uAE30\uB85D\uD558\uB294 \uB178\uD2B8 \uACBD\uB85C (\uCE7C\uB85C\uB9AC \uACC4\uC0B0 \uD65C\uC131\uD654 \uC2DC \uC0AC\uC6A9).",
   // Dashboard
   dashboardTitle: "\uC6B4\uB3D9 \uB300\uC2DC\uBCF4\uB4DC",
-  dashboardRefresh: "\u21BB \uC0C8\uB85C\uACE0\uCE68",
+  dashboardRefresh: "\uC0C8\uB85C\uACE0\uCE68",
   periodWeek: "\uC8FC\uAC04",
   periodMonth: "\uC6D4\uAC04",
   periodYear: "\uC5F0\uAC04",
@@ -344,6 +364,8 @@ var ko = {
   exerciseDataEmpty: "\uC774 \uC6B4\uB3D9\uC758 \uB370\uC774\uD130\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
   chartEstimated1RM: "\uCD94\uC815 1RM",
   chartTotalVolume: "\uCD1D \uBCFC\uB968",
+  chartCardioDuration: "\uC6B4\uB3D9 \uC2DC\uAC04 (\uBD84)",
+  chartCardioDistance: "\uAC70\uB9AC (km)",
   chartNoData: "\uB370\uC774\uD130 \uC5C6\uC74C"
 };
 var ko_default = ko;
@@ -404,7 +426,11 @@ var WorkoutLoggerSettingTab = class extends import_obsidian.PluginSettingTab {
     const i18n = t();
     containerEl.empty();
     new import_obsidian.Setting(containerEl).setName(i18n.settingExerciseFolderName).setDesc(i18n.settingExerciseFolderDesc).addText((text) => {
-      this.attachDatalist(text.inputEl, "wl-folder-list", this.folderOptions());
+      this.attachDatalist(
+        text.inputEl,
+        "wl-folder-list",
+        this.folderOptions()
+      );
       text.setPlaceholder("e.g., Gym/Exercises").setValue(this.plugin.settings.exerciseFolder).onChange(async (value) => {
         this.plugin.settings.exerciseFolder = value;
         await this.plugin.saveSettings();
@@ -419,13 +445,13 @@ var WorkoutLoggerSettingTab = class extends import_obsidian.PluginSettingTab {
     );
     if (this.plugin.settings.calculateCalories) {
       new import_obsidian.Setting(containerEl).setName(i18n.settingBodyWeightName).setDesc(i18n.settingBodyWeightDesc).addText(
-        (text) => text.setPlaceholder("e.g., 60").setValue(this.plugin.settings.bodyWeight.toString()).onChange(async (value) => {
+        (text) => text.setValue(this.plugin.settings.bodyWeight.toString()).onChange(async (value) => {
           this.plugin.settings.bodyWeight = parseFloat(value) || 60;
           await this.plugin.saveSettings();
         })
       );
       new import_obsidian.Setting(containerEl).setName(i18n.settingBodyFatName).setDesc(i18n.settingBodyFatDesc).addText(
-        (text) => text.setPlaceholder("e.g., 20").setValue(this.plugin.settings.bodyFatPercentage.toString()).onChange(async (value) => {
+        (text) => text.setValue(this.plugin.settings.bodyFatPercentage.toString()).onChange(async (value) => {
           this.plugin.settings.bodyFatPercentage = parseFloat(value) || 0;
           await this.plugin.saveSettings();
         })
@@ -1012,6 +1038,7 @@ var DashboardView = class extends import_obsidian4.ItemView {
     this.exerciseNames = [];
     this.bodyMetricsData = [];
     this.exerciseData = [];
+    this.cardioData = [];
     this.caloriesData = [];
     this.plugin = plugin;
   }
@@ -1019,7 +1046,7 @@ var DashboardView = class extends import_obsidian4.ItemView {
     return DASHBOARD_VIEW_TYPE;
   }
   getDisplayText() {
-    return "Workout Dashboard";
+    return "Workout dashboard";
   }
   getIcon() {
     return "bar-chart-2";
@@ -1040,6 +1067,7 @@ var DashboardView = class extends import_obsidian4.ItemView {
     this.bodyMetricsData = await this.loadBodyMetrics();
     if (this.selectedExercise) {
       this.exerciseData = await this.loadExerciseData(this.selectedExercise);
+      this.cardioData = await this.loadCardioData(this.selectedExercise);
     }
     this.caloriesData = await this.loadAllCalories();
   }
@@ -1125,6 +1153,35 @@ var DashboardView = class extends import_obsidian4.ItemView {
     }
     return results.sort((a, b) => a.date.localeCompare(b.date));
   }
+  async loadCardioData(exerciseName) {
+    const folderPath = this.plugin.settings.exerciseFolder;
+    const filePath = (0, import_obsidian4.normalizePath)(`${folderPath}/${exerciseName}.md`);
+    const file = this.app.vault.getAbstractFileByPath(filePath);
+    if (!(file instanceof import_obsidian4.TFile))
+      return [];
+    const content = await this.app.vault.read(file);
+    const results = [];
+    const re = /\[date:: ([^\]]+)\].*\[speed:: ([^\]]+)\].*\[incline:: ([^\]]+)\].*\[duration:: ([^\]]+)\].*\[calories:: ([^\]]+)\]/;
+    for (const line of content.split("\n")) {
+      const m = re.exec(line);
+      if (!m)
+        continue;
+      const speed = parseFloat(m[2]);
+      const incline = parseFloat(m[3]);
+      const duration = parseFloat(m[4]);
+      const calories = parseFloat(m[5]);
+      if (isNaN(speed) || isNaN(duration))
+        continue;
+      results.push({
+        date: m[1].trim(),
+        speed: isNaN(speed) ? 0 : speed,
+        incline: isNaN(incline) ? 0 : incline,
+        duration: isNaN(duration) ? 0 : duration,
+        calories: isNaN(calories) ? 0 : calories
+      });
+    }
+    return results.sort((a, b) => a.date.localeCompare(b.date));
+  }
   // ─── Aggregation & Filtering ───────────────────────────────────────────────
   aggregateMax(entries, field) {
     var _a;
@@ -1141,6 +1198,23 @@ var DashboardView = class extends import_obsidian4.ItemView {
       map.set(e.date, ((_a = map.get(e.date)) != null ? _a : 0) + e[field]);
     }
     return Array.from(map.entries()).map(([date, value]) => ({ date, value })).sort((a, b) => a.date.localeCompare(b.date));
+  }
+  aggregateSumCardio(entries, field) {
+    var _a;
+    const map = /* @__PURE__ */ new Map();
+    for (const e of entries) {
+      map.set(e.date, ((_a = map.get(e.date)) != null ? _a : 0) + e[field]);
+    }
+    return Array.from(map.entries()).map(([date, value]) => ({ date, value })).sort((a, b) => a.date.localeCompare(b.date));
+  }
+  aggregateCardioDistance(entries) {
+    var _a;
+    const map = /* @__PURE__ */ new Map();
+    for (const e of entries) {
+      const distance = e.speed * e.duration / 60;
+      map.set(e.date, ((_a = map.get(e.date)) != null ? _a : 0) + distance);
+    }
+    return Array.from(map.entries()).map(([date, value]) => ({ date, value: Math.round(value * 100) / 100 })).sort((a, b) => a.date.localeCompare(b.date));
   }
   filterByPeriod(points, period) {
     if (period === "all")
@@ -1209,9 +1283,21 @@ var DashboardView = class extends import_obsidian4.ItemView {
       this.currentPeriod
     );
     const chartsRow = section.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, weightPoints, i18n.chartWeight, "#4a9eff", "kg");
+    this.renderLineChart(
+      chartsRow,
+      weightPoints,
+      i18n.chartWeight,
+      "#4a9eff",
+      "kg"
+    );
     if (fatPoints.length > 0) {
-      this.renderLineChart(chartsRow, fatPoints, i18n.chartBodyFat, "#ff6b6b", "%");
+      this.renderLineChart(
+        chartsRow,
+        fatPoints,
+        i18n.chartBodyFat,
+        "#ff6b6b",
+        "%"
+      );
     }
   }
   renderCaloriesSection(container) {
@@ -1222,12 +1308,20 @@ var DashboardView = class extends import_obsidian4.ItemView {
     section.createEl("h3", { text: i18n.sectionCalories });
     const points = this.filterByPeriod(this.caloriesData, this.currentPeriod);
     const chartsRow = section.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, points, i18n.chartCaloriesLabel, "#f59e0b", "kcal");
+    this.renderLineChart(
+      chartsRow,
+      points,
+      i18n.chartCaloriesLabel,
+      "#f59e0b",
+      "kcal"
+    );
   }
   renderExerciseSection(container) {
     const i18n = t();
     const section = container.createDiv({ cls: "wl-dashboard__section" });
-    const sectionHeader = section.createDiv({ cls: "wl-dashboard__section-header" });
+    const sectionHeader = section.createDiv({
+      cls: "wl-dashboard__section-header"
+    });
     sectionHeader.createEl("h3", { text: i18n.sectionExercise });
     if (this.exerciseNames.length === 0) {
       section.createDiv({
@@ -1244,12 +1338,18 @@ var DashboardView = class extends import_obsidian4.ItemView {
       if (name === this.selectedExercise)
         opt.selected = true;
     }
-    const chartsArea = section.createDiv({ cls: "wl-dashboard__exercise-charts" });
+    const chartsArea = section.createDiv({
+      cls: "wl-dashboard__exercise-charts"
+    });
     this.renderExerciseCharts(chartsArea);
     select.addEventListener("change", () => {
       this.selectedExercise = select.value;
-      void this.loadExerciseData(this.selectedExercise).then((data) => {
-        this.exerciseData = data;
+      void Promise.all([
+        this.loadExerciseData(this.selectedExercise),
+        this.loadCardioData(this.selectedExercise)
+      ]).then(([exerciseData, cardioData]) => {
+        this.exerciseData = exerciseData;
+        this.cardioData = cardioData;
         chartsArea.empty();
         this.renderExerciseCharts(chartsArea);
       });
@@ -1257,24 +1357,38 @@ var DashboardView = class extends import_obsidian4.ItemView {
   }
   renderExerciseCharts(container) {
     const i18n = t();
-    if (!this.selectedExercise || this.exerciseData.length === 0) {
+    const isCardio = this.cardioData.length > 0;
+    if (!this.selectedExercise || !isCardio && this.exerciseData.length === 0) {
       container.createDiv({
         cls: "wl-dashboard__empty",
         text: i18n.exerciseDataEmpty
       });
       return;
     }
-    const rmPoints = this.filterByPeriod(
-      this.aggregateMax(this.exerciseData, "rm"),
-      this.currentPeriod
-    );
-    const volPoints = this.filterByPeriod(
-      this.aggregateSum(this.exerciseData, "volume"),
-      this.currentPeriod
-    );
     const chartsRow = container.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, rmPoints, i18n.chartEstimated1RM, "#a78bfa", "kg");
-    this.renderLineChart(chartsRow, volPoints, i18n.chartTotalVolume, "#34d399", "kg");
+    if (isCardio) {
+      const durationPoints = this.filterByPeriod(
+        this.aggregateSumCardio(this.cardioData, "duration"),
+        this.currentPeriod
+      );
+      const distancePoints = this.filterByPeriod(
+        this.aggregateCardioDistance(this.cardioData),
+        this.currentPeriod
+      );
+      this.renderLineChart(chartsRow, durationPoints, i18n.chartCardioDuration, "#f59e0b", "min");
+      this.renderLineChart(chartsRow, distancePoints, i18n.chartCardioDistance, "#34d399", "km");
+    } else {
+      const rmPoints = this.filterByPeriod(
+        this.aggregateMax(this.exerciseData, "rm"),
+        this.currentPeriod
+      );
+      const volPoints = this.filterByPeriod(
+        this.aggregateSum(this.exerciseData, "volume"),
+        this.currentPeriod
+      );
+      this.renderLineChart(chartsRow, rmPoints, i18n.chartEstimated1RM, "#a78bfa", "kg");
+      this.renderLineChart(chartsRow, volPoints, i18n.chartTotalVolume, "#34d399", "kg");
+    }
   }
   // ─── SVG Line Chart ────────────────────────────────────────────────────────
   renderLineChart(container, points, label, color, yUnit) {
@@ -1367,7 +1481,9 @@ var DashboardView = class extends import_obsidian4.ItemView {
       });
     }
     if (n > 1) {
-      const lineD = points.map((p, i) => `${i === 0 ? "M" : "L"}${xOf(i).toFixed(1)},${yOf(p.value).toFixed(1)}`).join(" ");
+      const lineD = points.map(
+        (p, i) => `${i === 0 ? "M" : "L"}${xOf(i).toFixed(1)},${yOf(p.value).toFixed(1)}`
+      ).join(" ");
       this.svgEl(g, "path", {
         d: lineD,
         class: "wl-chart__line",
@@ -1383,7 +1499,10 @@ var DashboardView = class extends import_obsidian4.ItemView {
         class: "wl-chart__dot",
         fill: color
       });
-      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      const title = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "title"
+      );
       title.textContent = `${points[i].date}: ${points[i].value.toFixed(1)} ${yUnit}`;
       circle.appendChild(title);
     }
@@ -1413,16 +1532,16 @@ var WorkoutLoggerPlugin = class extends import_obsidian5.Plugin {
     const ribbonIconEl = this.addRibbonIcon(
       "bar-chart-2",
       "Workout dashboard",
-      () => {
-        this.activateDashboard();
+      async () => {
+        await this.activateDashboard();
       }
     );
     ribbonIconEl.addClass("workout-logger-ribbon-class");
     this.addCommand({
       id: "open-dashboard",
       name: "Open dashboard",
-      callback: () => {
-        this.activateDashboard();
+      callback: async () => {
+        await this.activateDashboard();
       }
     });
     this.addCommand({
@@ -1443,7 +1562,7 @@ var WorkoutLoggerPlugin = class extends import_obsidian5.Plugin {
       leaf = workspace.getLeaf(false);
       await leaf.setViewState({ type: DASHBOARD_VIEW_TYPE, active: true });
     }
-    workspace.revealLeaf(leaf);
+    await workspace.revealLeaf(leaf);
   }
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
