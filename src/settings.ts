@@ -76,7 +76,11 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
       .setName(i18n.settingExerciseFolderName)
       .setDesc(i18n.settingExerciseFolderDesc)
       .addText((text) => {
-        this.attachDatalist(text.inputEl, "wl-folder-list", this.folderOptions());
+        this.attachDatalist(
+          text.inputEl,
+          "wl-folder-list",
+          this.folderOptions(),
+        );
         text
           .setPlaceholder("e.g., Gym/Exercises")
           .setValue(this.plugin.settings.exerciseFolder)
@@ -105,7 +109,6 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
         .setDesc(i18n.settingBodyWeightDesc)
         .addText((text) =>
           text
-            .setPlaceholder("e.g., 60")
             .setValue(this.plugin.settings.bodyWeight.toString())
             .onChange(async (value) => {
               this.plugin.settings.bodyWeight = parseFloat(value) || 60;
@@ -118,7 +121,6 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
         .setDesc(i18n.settingBodyFatDesc)
         .addText((text) =>
           text
-            .setPlaceholder("e.g., 20")
             .setValue(this.plugin.settings.bodyFatPercentage.toString())
             .onChange(async (value) => {
               this.plugin.settings.bodyFatPercentage = parseFloat(value) || 0;

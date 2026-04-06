@@ -1,4 +1,10 @@
-import { ItemView, WorkspaceLeaf, TFile, TFolder, normalizePath } from "obsidian";
+import {
+  ItemView,
+  WorkspaceLeaf,
+  TFile,
+  TFolder,
+  normalizePath,
+} from "obsidian";
 import WorkoutLoggerPlugin from "./main";
 import { t } from "./i18n";
 
@@ -49,7 +55,7 @@ export class DashboardView extends ItemView {
   }
 
   getDisplayText(): string {
-    return "Workout Dashboard";
+    return "Workout dashboard";
   }
 
   getIcon(): string {
@@ -133,7 +139,9 @@ export class DashboardView extends ItemView {
       .sort((a, b) => a.date.localeCompare(b.date));
   }
 
-  private async loadExerciseData(exerciseName: string): Promise<ExerciseEntry[]> {
+  private async loadExerciseData(
+    exerciseName: string,
+  ): Promise<ExerciseEntry[]> {
     const folderPath = this.plugin.settings.exerciseFolder;
     const filePath = normalizePath(`${folderPath}/${exerciseName}.md`);
     const file = this.app.vault.getAbstractFileByPath(filePath);
@@ -235,7 +243,9 @@ export class DashboardView extends ItemView {
     const tabBar = container.createDiv({ cls: "wl-dashboard__tabs" });
     for (const tab of tabs) {
       const btn = tabBar.createEl("button", {
-        cls: "wl-dashboard__tab" + (this.currentPeriod === tab.value ? " is-active" : ""),
+        cls:
+          "wl-dashboard__tab" +
+          (this.currentPeriod === tab.value ? " is-active" : ""),
         text: tab.label,
       });
       btn.addEventListener("click", () => {
@@ -270,9 +280,21 @@ export class DashboardView extends ItemView {
     );
 
     const chartsRow = section.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, weightPoints, i18n.chartWeight, "#4a9eff", "kg");
+    this.renderLineChart(
+      chartsRow,
+      weightPoints,
+      i18n.chartWeight,
+      "#4a9eff",
+      "kg",
+    );
     if (fatPoints.length > 0) {
-      this.renderLineChart(chartsRow, fatPoints, i18n.chartBodyFat, "#ff6b6b", "%");
+      this.renderLineChart(
+        chartsRow,
+        fatPoints,
+        i18n.chartBodyFat,
+        "#ff6b6b",
+        "%",
+      );
     }
   }
 
@@ -285,13 +307,21 @@ export class DashboardView extends ItemView {
 
     const points = this.filterByPeriod(this.caloriesData, this.currentPeriod);
     const chartsRow = section.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, points, i18n.chartCaloriesLabel, "#f59e0b", "kcal");
+    this.renderLineChart(
+      chartsRow,
+      points,
+      i18n.chartCaloriesLabel,
+      "#f59e0b",
+      "kcal",
+    );
   }
 
   private renderExerciseSection(container: HTMLElement): void {
     const i18n = t();
     const section = container.createDiv({ cls: "wl-dashboard__section" });
-    const sectionHeader = section.createDiv({ cls: "wl-dashboard__section-header" });
+    const sectionHeader = section.createDiv({
+      cls: "wl-dashboard__section-header",
+    });
     sectionHeader.createEl("h3", { text: i18n.sectionExercise });
 
     if (this.exerciseNames.length === 0) {
@@ -310,7 +340,9 @@ export class DashboardView extends ItemView {
       if (name === this.selectedExercise) opt.selected = true;
     }
 
-    const chartsArea = section.createDiv({ cls: "wl-dashboard__exercise-charts" });
+    const chartsArea = section.createDiv({
+      cls: "wl-dashboard__exercise-charts",
+    });
     this.renderExerciseCharts(chartsArea);
 
     select.addEventListener("change", () => {
@@ -343,8 +375,20 @@ export class DashboardView extends ItemView {
     );
 
     const chartsRow = container.createDiv({ cls: "wl-dashboard__charts" });
-    this.renderLineChart(chartsRow, rmPoints, i18n.chartEstimated1RM, "#a78bfa", "kg");
-    this.renderLineChart(chartsRow, volPoints, i18n.chartTotalVolume, "#34d399", "kg");
+    this.renderLineChart(
+      chartsRow,
+      rmPoints,
+      i18n.chartEstimated1RM,
+      "#a78bfa",
+      "kg",
+    );
+    this.renderLineChart(
+      chartsRow,
+      volPoints,
+      i18n.chartTotalVolume,
+      "#34d399",
+      "kg",
+    );
   }
 
   // ─── SVG Line Chart ────────────────────────────────────────────────────────
@@ -378,10 +422,8 @@ export class DashboardView extends ItemView {
     const yMax = rawMax + spread * 0.08;
 
     const n = points.length;
-    const xOf = (i: number): number =>
-      n === 1 ? iW / 2 : (i / (n - 1)) * iW;
-    const yOf = (v: number): number =>
-      iH - ((v - yMin) / (yMax - yMin)) * iH;
+    const xOf = (i: number): number => (n === 1 ? iW / 2 : (i / (n - 1)) * iW);
+    const yOf = (v: number): number => iH - ((v - yMin) / (yMax - yMin)) * iH;
 
     const svg = this.svgEl(wrapper, "svg", {
       viewBox: `0 0 ${W} ${H}`,
@@ -426,10 +468,18 @@ export class DashboardView extends ItemView {
 
     // Axes
     this.svgEl(g, "line", {
-      x1: "0", y1: "0", x2: "0", y2: String(iH), class: "wl-chart__axis",
+      x1: "0",
+      y1: "0",
+      x2: "0",
+      y2: String(iH),
+      class: "wl-chart__axis",
     });
     this.svgEl(g, "line", {
-      x1: "0", y1: String(iH), x2: String(iW), y2: String(iH), class: "wl-chart__axis",
+      x1: "0",
+      y1: String(iH),
+      x2: String(iW),
+      y2: String(iH),
+      class: "wl-chart__axis",
     });
 
     // X-axis labels (up to 6, evenly spaced)
@@ -449,7 +499,9 @@ export class DashboardView extends ItemView {
     if (n > 1) {
       const areaD =
         `M${xOf(0).toFixed(1)},${iH} ` +
-        points.map((p, i) => `L${xOf(i).toFixed(1)},${yOf(p.value).toFixed(1)}`).join(" ") +
+        points
+          .map((p, i) => `L${xOf(i).toFixed(1)},${yOf(p.value).toFixed(1)}`)
+          .join(" ") +
         ` L${xOf(n - 1).toFixed(1)},${iH} Z`;
       this.svgEl(g, "path", {
         d: areaD,
@@ -461,7 +513,10 @@ export class DashboardView extends ItemView {
     // Line
     if (n > 1) {
       const lineD = points
-        .map((p, i) => `${i === 0 ? "M" : "L"}${xOf(i).toFixed(1)},${yOf(p.value).toFixed(1)}`)
+        .map(
+          (p, i) =>
+            `${i === 0 ? "M" : "L"}${xOf(i).toFixed(1)},${yOf(p.value).toFixed(1)}`,
+        )
         .join(" ");
       this.svgEl(g, "path", {
         d: lineD,
@@ -480,7 +535,10 @@ export class DashboardView extends ItemView {
         class: "wl-chart__dot",
         fill: color,
       });
-      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      const title = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "title",
+      );
       title.textContent = `${points[i].date}: ${points[i].value.toFixed(1)} ${yUnit}`;
       circle.appendChild(title);
     }

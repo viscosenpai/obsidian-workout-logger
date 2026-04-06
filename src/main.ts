@@ -23,8 +23,8 @@ export default class WorkoutLoggerPlugin extends Plugin {
     const ribbonIconEl = this.addRibbonIcon(
       "bar-chart-2",
       "Workout dashboard",
-      () => {
-        this.activateDashboard();
+      async () => {
+        await this.activateDashboard();
       },
     );
     ribbonIconEl.addClass("workout-logger-ribbon-class");
@@ -33,8 +33,8 @@ export default class WorkoutLoggerPlugin extends Plugin {
     this.addCommand({
       id: "open-dashboard",
       name: "Open dashboard",
-      callback: () => {
-        this.activateDashboard();
+      callback: async () => {
+        await this.activateDashboard();
       },
     });
 
@@ -60,7 +60,7 @@ export default class WorkoutLoggerPlugin extends Plugin {
       leaf = workspace.getLeaf(false);
       await leaf.setViewState({ type: DASHBOARD_VIEW_TYPE, active: true });
     }
-    workspace.revealLeaf(leaf);
+    await workspace.revealLeaf(leaf);
   }
 
   async loadSettings() {
