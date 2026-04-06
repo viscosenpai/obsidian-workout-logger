@@ -33,9 +33,9 @@ export class WorkoutLoggerSettingTab extends PluginSettingTab {
     options: string[],
   ): void {
     // Reuse existing datalist if already present (e.g. on re-render)
-    let datalist = this.containerEl.querySelector(
+    let datalist = this.containerEl.querySelector<HTMLDataListElement>(
       `#${listId}`,
-    ) as HTMLDataListElement | null;
+    );
     if (!datalist) {
       datalist = this.containerEl.createEl("datalist", {
         attr: { id: listId },

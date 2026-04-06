@@ -61,14 +61,14 @@ export class DashboardView extends ItemView {
     this.render();
   }
 
-  async onClose(): Promise<void> {
-    // cleanup
+  onClose(): Promise<void> {
+    return Promise.resolve();
   }
 
   // ─── Data Loading ─────────────────────────────────────────────────────────
 
   private async loadAll(): Promise<void> {
-    this.exerciseNames = await this.loadExerciseNames();
+    this.exerciseNames = this.loadExerciseNames();
     if (this.exerciseNames.length > 0 && !this.selectedExercise) {
       this.selectedExercise = this.exerciseNames[0];
     }
@@ -79,7 +79,7 @@ export class DashboardView extends ItemView {
     this.caloriesData = await this.loadAllCalories();
   }
 
-  private async loadExerciseNames(): Promise<string[]> {
+  private loadExerciseNames(): string[] {
     const folderPath = this.plugin.settings.exerciseFolder;
     const folder = this.app.vault.getAbstractFileByPath(folderPath);
     if (!(folder instanceof TFolder)) return [];
@@ -211,9 +211,8 @@ export class DashboardView extends ItemView {
       cls: "wl-dashboard__refresh",
       text: i18n.dashboardRefresh,
     });
-    refreshBtn.addEventListener("click", async () => {
-      await this.loadAll();
-      this.render();
+    refreshBtn.addEventListener("click", () => {
+      void this.loadAll().then(() => this.render());
     });
 
     // Period tabs
@@ -314,11 +313,13 @@ export class DashboardView extends ItemView {
     const chartsArea = section.createDiv({ cls: "wl-dashboard__exercise-charts" });
     this.renderExerciseCharts(chartsArea);
 
-    select.addEventListener("change", async () => {
+    select.addEventListener("change", () => {
       this.selectedExercise = select.value;
-      this.exerciseData = await this.loadExerciseData(this.selectedExercise);
-      chartsArea.empty();
-      this.renderExerciseCharts(chartsArea);
+      void this.loadExerciseData(this.selectedExercise).then((data) => {
+        this.exerciseData = data;
+        chartsArea.empty();
+        this.renderExerciseCharts(chartsArea);
+      });
     });
   }
 

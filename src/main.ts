@@ -22,37 +22,35 @@ export default class WorkoutLoggerPlugin extends Plugin {
     // Ribbon opens the dashboard
     const ribbonIconEl = this.addRibbonIcon(
       "bar-chart-2",
-      "Workout Dashboard",
+      "Workout dashboard",
       () => {
         this.activateDashboard();
       },
     );
     ribbonIconEl.addClass("workout-logger-ribbon-class");
 
-    // Command: open dashboard
+    // Command IDs must not include the plugin ID (Obsidian adds it automatically)
     this.addCommand({
-      id: "open-workout-dashboard",
-      name: "Open Dashboard",
+      id: "open-dashboard",
+      name: "Open dashboard",
       callback: () => {
         this.activateDashboard();
       },
     });
 
-    // Command: open logger modal (unchanged)
     this.addCommand({
-      id: "open-workout-logger",
-      name: "Open Logger",
+      id: "open-logger",
+      name: "Open logger",
       callback: () => {
         new LoggerModal(this.app, this).open();
       },
     });
 
-    // Add settings tab
     this.addSettingTab(new WorkoutLoggerSettingTab(this.app, this));
   }
 
   onunload() {
-    this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
+    // Do not detach leaves — let Obsidian manage leaf lifecycle
   }
 
   async activateDashboard(): Promise<void> {

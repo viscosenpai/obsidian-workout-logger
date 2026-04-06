@@ -97,6 +97,10 @@
 
 /* 下部のボタンコンテナ */
 .modal-button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
   border-top: 1px solid var(--background-modifier-border);
   padding-top: 20px;
 }

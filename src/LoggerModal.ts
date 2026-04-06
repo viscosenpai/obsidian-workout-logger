@@ -199,7 +199,7 @@ export class LoggerModal extends Modal {
 
         text.inputEl.setAttribute("list", dataListId);
 
-        text.onChange(async (value) => {
+        text.onChange((value) => {
           this.exerciseName = value;
 
           const fileName = this.exerciseName.endsWith(".md")
@@ -386,10 +386,6 @@ export class LoggerModal extends Modal {
     const buttonContainer = containerEl.createDiv({
       cls: "modal-button-container",
     });
-    buttonContainer.style.display = "flex";
-    buttonContainer.style.justifyContent = "flex-end";
-    buttonContainer.style.gap = "10px";
-    buttonContainer.style.marginTop = "20px";
 
     const cancelButton = buttonContainer.createEl("button", { text: i18n.cancel });
     cancelButton.addEventListener("click", () => {
@@ -400,8 +396,8 @@ export class LoggerModal extends Modal {
       text: i18n.logSet,
       cls: "mod-cta",
     });
-    submitButton.addEventListener("click", async () => {
-      await this.submit();
+    submitButton.addEventListener("click", () => {
+      void this.submit();
     });
   }
 

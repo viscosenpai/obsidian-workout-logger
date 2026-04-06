@@ -37,20 +37,20 @@ var en = {
   exerciseDesc: "Select an existing exercise or type a new one to create it.",
   exercisePlaceholder: "e.g. Bench Press",
   // Target muscle
-  targetMuscleLabel: "Target Muscle",
+  targetMuscleLabel: "Target muscle",
   targetMuscleDesc: "Select the primary muscle group targeted.",
   // Equipment
   equipmentLabel: "Equipment",
   equipmentDesc: "Select the equipment used.",
   // Log date
-  logDateLabel: "Log Date",
+  logDateLabel: "Log date",
   logDateDesc: "Select the date for the workout log.",
   // Calorie inputs
-  bodyWeightLabel: "Body Weight (kg)",
+  bodyWeightLabel: "Body weight (kg)",
   bodyWeightDesc: "Used for calorie calculation. Syncs with plugin settings.",
-  bodyFatLabel: "Body Fat Percentage (%)",
+  bodyFatLabel: "Body fat percentage (%)",
   bodyFatDesc: "Current body fat %. Logged with the entry and syncs with plugin settings.",
-  workoutDurationLabel: "Total Exercise Duration (min)",
+  workoutDurationLabel: "Total exercise duration (min)",
   workoutDurationDesc: "Total time for this exercise. Divided equally across sets to calculate calories per set.",
   // Cardio
   cardioSectionLabel: "Cardio",
@@ -61,11 +61,11 @@ var en = {
   setWeight: (n) => `Set ${n} - Weight (kg/lbs)`,
   setReps: (n) => `Set ${n} - Reps`,
   setRpe: (n) => `Set ${n} - RPE`,
-  addSet: "Add Set",
-  removeSet: "Remove Set",
+  addSet: "Add set",
+  removeSet: "Remove set",
   // Buttons
   cancel: "Cancel",
-  logSet: "Log Set",
+  logSet: "Log set",
   // Notices
   noticeNoExercise: "\u26A0\uFE0F Please enter an exercise name!",
   noticeNoValidSet: "\u26A0\uFE0F Enter at least one valid set (weight and reps > 0)!",
@@ -74,34 +74,34 @@ var en = {
   noticeLoggedCardio: (duration, calories, exercise) => `\u2705 Logged ${duration}min cardio (${calories} kcal) for ${exercise}`,
   noticeFailed: "\u274C Failed to log the set. Check console for details.",
   // Settings
-  settingExerciseFolderName: "Exercise Folder",
+  settingExerciseFolderName: "Exercise folder",
   settingExerciseFolderDesc: "The folder where your exercise notes are stored.",
-  settingCalcCaloriesName: "Calculate Calories Burned",
+  settingCalcCaloriesName: "Calculate calories burned",
   settingCalcCaloriesDesc: "Calculate calories burned based on METs, body weight, and workout duration.",
-  settingBodyWeightName: "Default Body Weight (kg)",
+  settingBodyWeightName: "Default body weight (kg)",
   settingBodyWeightDesc: "Used for calorie calculation.",
-  settingBodyFatName: "Default Body Fat Percentage (%)",
+  settingBodyFatName: "Default body fat percentage (%)",
   settingBodyFatDesc: "Logged alongside each workout entry to track body composition over time.",
-  settingBodyMetricsNoteName: "Body Metrics Note",
+  settingBodyMetricsNoteName: "Body metrics note",
   settingBodyMetricsNoteDesc: "Path to the note where daily body weight and body fat % are recorded (used when calorie calculation is enabled).",
   // Dashboard
-  dashboardTitle: "Workout Dashboard",
+  dashboardTitle: "Workout dashboard",
   dashboardRefresh: "\u21BB Refresh",
   periodWeek: "Week",
   periodMonth: "Month",
   periodYear: "Year",
-  periodAll: "All Time",
-  sectionBodyMetrics: "Body Metrics",
+  periodAll: "All time",
+  sectionBodyMetrics: "Body metrics",
   bodyMetricsEmpty: "No data found. Enable calorie calculation and log your body weight.",
-  chartWeight: "Body Weight",
-  chartBodyFat: "Body Fat %",
-  sectionCalories: "Calories Burned",
-  chartCaloriesLabel: "Calories Burned (daily total)",
-  sectionExercise: "Exercise Log",
+  chartWeight: "Body weight",
+  chartBodyFat: "Body fat %",
+  sectionCalories: "Calories burned",
+  chartCaloriesLabel: "Calories burned (daily total)",
+  sectionExercise: "Exercise log",
   exerciseEmpty: "No exercises found. Log a workout to get started.",
   exerciseDataEmpty: "No data for this exercise.",
   chartEstimated1RM: "Estimated 1RM",
-  chartTotalVolume: "Total Volume",
+  chartTotalVolume: "Total volume",
   chartNoData: "No data"
 };
 var en_default = en;
@@ -720,7 +720,7 @@ var LoggerModal = class extends import_obsidian3.Modal {
         });
       }
       text.inputEl.setAttribute("list", dataListId);
-      text.onChange(async (value) => {
+      text.onChange((value) => {
         this.exerciseName = value;
         const fileName = this.exerciseName.endsWith(".md") ? this.exerciseName : `${this.exerciseName}.md`;
         const filePath = `${this.plugin.settings.exerciseFolder}/${fileName}`;
@@ -869,10 +869,6 @@ var LoggerModal = class extends import_obsidian3.Modal {
     const buttonContainer = containerEl.createDiv({
       cls: "modal-button-container"
     });
-    buttonContainer.style.display = "flex";
-    buttonContainer.style.justifyContent = "flex-end";
-    buttonContainer.style.gap = "10px";
-    buttonContainer.style.marginTop = "20px";
     const cancelButton = buttonContainer.createEl("button", { text: i18n.cancel });
     cancelButton.addEventListener("click", () => {
       this.close();
@@ -881,8 +877,8 @@ var LoggerModal = class extends import_obsidian3.Modal {
       text: i18n.logSet,
       cls: "mod-cta"
     });
-    submitButton.addEventListener("click", async () => {
-      await this.submit();
+    submitButton.addEventListener("click", () => {
+      void this.submit();
     });
   }
   async submit() {
@@ -1017,11 +1013,12 @@ var DashboardView = class extends import_obsidian4.ItemView {
     await this.loadAll();
     this.render();
   }
-  async onClose() {
+  onClose() {
+    return Promise.resolve();
   }
   // ─── Data Loading ─────────────────────────────────────────────────────────
   async loadAll() {
-    this.exerciseNames = await this.loadExerciseNames();
+    this.exerciseNames = this.loadExerciseNames();
     if (this.exerciseNames.length > 0 && !this.selectedExercise) {
       this.selectedExercise = this.exerciseNames[0];
     }
@@ -1031,7 +1028,7 @@ var DashboardView = class extends import_obsidian4.ItemView {
     }
     this.caloriesData = await this.loadAllCalories();
   }
-  async loadExerciseNames() {
+  loadExerciseNames() {
     const folderPath = this.plugin.settings.exerciseFolder;
     const folder = this.app.vault.getAbstractFileByPath(folderPath);
     if (!(folder instanceof import_obsidian4.TFolder))
@@ -1149,9 +1146,8 @@ var DashboardView = class extends import_obsidian4.ItemView {
       cls: "wl-dashboard__refresh",
       text: i18n.dashboardRefresh
     });
-    refreshBtn.addEventListener("click", async () => {
-      await this.loadAll();
-      this.render();
+    refreshBtn.addEventListener("click", () => {
+      void this.loadAll().then(() => this.render());
     });
     this.renderPeriodTabs(root);
     this.renderBodyMetricsSection(root);
@@ -1235,11 +1231,13 @@ var DashboardView = class extends import_obsidian4.ItemView {
     }
     const chartsArea = section.createDiv({ cls: "wl-dashboard__exercise-charts" });
     this.renderExerciseCharts(chartsArea);
-    select.addEventListener("change", async () => {
+    select.addEventListener("change", () => {
       this.selectedExercise = select.value;
-      this.exerciseData = await this.loadExerciseData(this.selectedExercise);
-      chartsArea.empty();
-      this.renderExerciseCharts(chartsArea);
+      void this.loadExerciseData(this.selectedExercise).then((data) => {
+        this.exerciseData = data;
+        chartsArea.empty();
+        this.renderExerciseCharts(chartsArea);
+      });
     });
   }
   renderExerciseCharts(container) {
@@ -1399,22 +1397,22 @@ var WorkoutLoggerPlugin = class extends import_obsidian5.Plugin {
     );
     const ribbonIconEl = this.addRibbonIcon(
       "bar-chart-2",
-      "Workout Dashboard",
+      "Workout dashboard",
       () => {
         this.activateDashboard();
       }
     );
     ribbonIconEl.addClass("workout-logger-ribbon-class");
     this.addCommand({
-      id: "open-workout-dashboard",
-      name: "Open Dashboard",
+      id: "open-dashboard",
+      name: "Open dashboard",
       callback: () => {
         this.activateDashboard();
       }
     });
     this.addCommand({
-      id: "open-workout-logger",
-      name: "Open Logger",
+      id: "open-logger",
+      name: "Open logger",
       callback: () => {
         new LoggerModal(this.app, this).open();
       }
@@ -1422,7 +1420,6 @@ var WorkoutLoggerPlugin = class extends import_obsidian5.Plugin {
     this.addSettingTab(new WorkoutLoggerSettingTab(this.app, this));
   }
   onunload() {
-    this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
   }
   async activateDashboard() {
     const { workspace } = this.app;
