@@ -9,7 +9,6 @@ export interface Translations {
   // Exercise
   exerciseLabel: string;
   exerciseDesc: string;
-  exercisePlaceholder: string;
   // Target muscle
   targetMuscleLabel: string;
   targetMuscleDesc: string;
@@ -47,7 +46,11 @@ export interface Translations {
   noticeNoValidSet: string;
   noticeNoDuration: string;
   noticeLoggedStrength: (summary: string, exercise: string) => string;
-  noticeLoggedCardio: (duration: number, calories: number, exercise: string) => string;
+  noticeLoggedCardio: (
+    duration: number,
+    calories: number,
+    exercise: string,
+  ) => string;
   noticeFailed: string;
   // Settings
   settingExerciseFolderName: string;

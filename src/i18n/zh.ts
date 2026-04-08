@@ -6,7 +6,6 @@ const zh: Translations = {
   // Exercise
   exerciseLabel: "训练动作",
   exerciseDesc: "选择已有动作，或输入新名称以创建。",
-  exercisePlaceholder: "例：卧推",
   // Target muscle
   targetMuscleLabel: "目标肌群",
   targetMuscleDesc: "选择本次训练的主要肌群。",

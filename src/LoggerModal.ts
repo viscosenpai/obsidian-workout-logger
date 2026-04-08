@@ -8,11 +8,28 @@ import {
   DropdownComponent,
 } from "obsidian";
 import WorkoutLoggerPlugin from "./main";
-import { getOrCreateExerciseNote, appendLog, appendCardioLog, appendBodyMetrics } from "./file";
-import { EQUIPMENT_METS, calculateCalories, calculateWalkingCalorie } from "./utils";
+import {
+  getOrCreateExerciseNote,
+  appendLog,
+  appendCardioLog,
+  appendBodyMetrics,
+} from "./file";
+import {
+  EQUIPMENT_METS,
+  calculateCalories,
+  calculateWalkingCalorie,
+} from "./utils";
 import { t } from "./i18n";
 
-const TARGET_MUSCLES = ["Chest", "Back", "Shoulder", "Arms", "Abs", "Legs", "Cardio"];
+const TARGET_MUSCLES = [
+  "Chest",
+  "Back",
+  "Shoulder",
+  "Arms",
+  "Abs",
+  "Legs",
+  "Cardio",
+];
 const EQUIPMENT_TYPES = [
   "Barbell",
   "Dumbbell",
@@ -34,8 +51,8 @@ export class LoggerModal extends Modal {
   bodyFatPercentage: number = 0;
   workoutDuration: number = 0; // in minutes (strength)
   // Cardio-specific fields
-  cardioSpeed: number = 0;    // km/h
-  cardioIncline: number = 0;  // %
+  cardioSpeed: number = 0; // km/h
+  cardioIncline: number = 0; // %
   cardioDuration: number = 0; // minutes
   // Dynamic section containers (set in onOpen)
   private calorieContainer: HTMLElement | null = null;
@@ -129,39 +146,40 @@ export class LoggerModal extends Modal {
   private renderCardioInputs(containerEl: HTMLElement) {
     const i18n = t();
     const card = containerEl.createDiv({ cls: "cardio-input-card" });
-    card.createEl("p", { cls: "cardio-input-card__label", text: i18n.cardioSectionLabel });
+    card.createEl("p", {
+      cls: "cardio-input-card__label",
+      text: i18n.cardioSectionLabel,
+    });
 
-    new Setting(card)
-      .setName(i18n.cardioSpeedLabel)
-      .addText((text) => {
-        text.inputEl.type = "number";
-        text.inputEl.step = "0.1";
-        text.setValue(this.cardioSpeed > 0 ? this.cardioSpeed.toString() : "");
-        text.onChange((value) => {
-          this.cardioSpeed = parseFloat(value) || 0;
-        });
+    new Setting(card).setName(i18n.cardioSpeedLabel).addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.step = "0.1";
+      text.setValue(this.cardioSpeed > 0 ? this.cardioSpeed.toString() : "");
+      text.onChange((value) => {
+        this.cardioSpeed = parseFloat(value) || 0;
       });
+    });
 
-    new Setting(card)
-      .setName(i18n.cardioInclineLabel)
-      .addText((text) => {
-        text.inputEl.type = "number";
-        text.inputEl.step = "0.5";
-        text.setValue(this.cardioIncline > 0 ? this.cardioIncline.toString() : "");
-        text.onChange((value) => {
-          this.cardioIncline = parseFloat(value) || 0;
-        });
+    new Setting(card).setName(i18n.cardioInclineLabel).addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.step = "0.5";
+      text.setValue(
+        this.cardioIncline > 0 ? this.cardioIncline.toString() : "",
+      );
+      text.onChange((value) => {
+        this.cardioIncline = parseFloat(value) || 0;
       });
+    });
 
-    new Setting(card)
-      .setName(i18n.cardioDurationLabel)
-      .addText((text) => {
-        text.inputEl.type = "number";
-        text.setValue(this.cardioDuration > 0 ? this.cardioDuration.toString() : "");
-        text.onChange((value) => {
-          this.cardioDuration = parseFloat(value) || 0;
-        });
+    new Setting(card).setName(i18n.cardioDurationLabel).addText((text) => {
+      text.inputEl.type = "number";
+      text.setValue(
+        this.cardioDuration > 0 ? this.cardioDuration.toString() : "",
+      );
+      text.onChange((value) => {
+        this.cardioDuration = parseFloat(value) || 0;
       });
+    });
   }
 
   /**
@@ -173,8 +191,6 @@ export class LoggerModal extends Modal {
       .setName(i18n.exerciseLabel)
       .setDesc(i18n.exerciseDesc)
       .addText((text) => {
-        text.setPlaceholder(i18n.exercisePlaceholder);
-
         const dataListId = "exercises-list";
         let datalist = containerEl.querySelector(
           `#${dataListId}`,
@@ -270,7 +286,10 @@ export class LoggerModal extends Modal {
       .addDropdown((dropdown) => {
         this.equipmentDropdown = dropdown;
         EQUIPMENT_TYPES.forEach((equipment, idx) => {
-          dropdown.addOption(equipment, i18n.equipmentTypeOptions[idx] ?? equipment);
+          dropdown.addOption(
+            equipment,
+            i18n.equipmentTypeOptions[idx] ?? equipment,
+          );
         });
         dropdown.setValue(this.equipment).onChange((value) => {
           this.equipment = value;
@@ -372,12 +391,27 @@ export class LoggerModal extends Modal {
       const items = group.querySelectorAll(".setting-item");
       if (isBodyweight) {
         // No weight field: items[0]=reps, items[1]=rpe
-        if (items[0]) items[0].querySelector(".setting-name")!.textContent = i18n.setReps(index + 1);
-        if (items[1]) items[1].querySelector(".setting-name")!.textContent = i18n.setRpe(index + 1);
+        if (items[0])
+          items[0].querySelector(".setting-name")!.textContent = i18n.setReps(
+            index + 1,
+          );
+        if (items[1])
+          items[1].querySelector(".setting-name")!.textContent = i18n.setRpe(
+            index + 1,
+          );
       } else {
-        if (items[0]) items[0].querySelector(".setting-name")!.textContent = i18n.setWeight(index + 1);
-        if (items[1]) items[1].querySelector(".setting-name")!.textContent = i18n.setReps(index + 1);
-        if (items[2]) items[2].querySelector(".setting-name")!.textContent = i18n.setRpe(index + 1);
+        if (items[0])
+          items[0].querySelector(".setting-name")!.textContent = i18n.setWeight(
+            index + 1,
+          );
+        if (items[1])
+          items[1].querySelector(".setting-name")!.textContent = i18n.setReps(
+            index + 1,
+          );
+        if (items[2])
+          items[2].querySelector(".setting-name")!.textContent = i18n.setRpe(
+            index + 1,
+          );
       }
     });
   }
@@ -391,7 +425,9 @@ export class LoggerModal extends Modal {
       cls: "modal-button-container",
     });
 
-    const cancelButton = buttonContainer.createEl("button", { text: i18n.cancel });
+    const cancelButton = buttonContainer.createEl("button", {
+      text: i18n.cancel,
+    });
     cancelButton.addEventListener("click", () => {
       this.close();
     });
@@ -484,7 +520,9 @@ export class LoggerModal extends Modal {
 
     const isBodyweight = this.equipment === "Bodyweight";
     const setsSummary = validSets
-      .map((s) => isBodyweight ? `BW x ${s.reps}reps` : `${s.weight}kg x ${s.reps}reps`)
+      .map((s) =>
+        isBodyweight ? `BW x ${s.reps}reps` : `${s.weight}kg x ${s.reps}reps`,
+      )
       .join(", ");
     new Notice(i18n.noticeLoggedStrength(setsSummary, this.exerciseName));
   }
@@ -528,7 +566,11 @@ export class LoggerModal extends Modal {
     }
 
     new Notice(
-      i18n.noticeLoggedCardio(this.cardioDuration, Math.round(calories), this.exerciseName),
+      i18n.noticeLoggedCardio(
+        this.cardioDuration,
+        Math.round(calories),
+        this.exerciseName,
+      ),
     );
   }
 

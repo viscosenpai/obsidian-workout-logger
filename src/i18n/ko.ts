@@ -6,7 +6,6 @@ const ko: Translations = {
   // Exercise
   exerciseLabel: "운동",
   exerciseDesc: "기존 운동을 선택하거나 새 이름을 입력하여 생성하세요.",
-  exercisePlaceholder: "예: 벤치 프레스",
   // Target muscle
   targetMuscleLabel: "목표 근육",
   targetMuscleDesc: "주요 목표 근육 그룹을 선택하세요.",

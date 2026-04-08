@@ -7,7 +7,6 @@ const ja: Translations = {
   exerciseLabel: "エクササイズ",
   exerciseDesc:
     "既存のエクササイズを選択するか、新しい名前を入力して作成します。",
-  exercisePlaceholder: "例: ベンチプレス",
   // Target muscle
   targetMuscleLabel: "対象筋肉",
   targetMuscleDesc: "主に鍛える筋肉グループを選択してください。",

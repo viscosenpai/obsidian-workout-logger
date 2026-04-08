@@ -6,7 +6,6 @@ const en: Translations = {
   // Exercise
   exerciseLabel: "Exercise",
   exerciseDesc: "Select an existing exercise or type a new one to create it.",
-  exercisePlaceholder: "E.g. bench press",
   // Target muscle
   targetMuscleLabel: "Target muscle",
   targetMuscleDesc: "Select the primary muscle group targeted.",

@@ -35,7 +35,6 @@ var en = {
   // Exercise
   exerciseLabel: "Exercise",
   exerciseDesc: "Select an existing exercise or type a new one to create it.",
-  exercisePlaceholder: "E.g. bench press",
   // Target muscle
   targetMuscleLabel: "Target muscle",
   targetMuscleDesc: "Select the primary muscle group targeted.",
@@ -131,7 +130,6 @@ var ja = {
   // Exercise
   exerciseLabel: "\u30A8\u30AF\u30B5\u30B5\u30A4\u30BA",
   exerciseDesc: "\u65E2\u5B58\u306E\u30A8\u30AF\u30B5\u30B5\u30A4\u30BA\u3092\u9078\u629E\u3059\u308B\u304B\u3001\u65B0\u3057\u3044\u540D\u524D\u3092\u5165\u529B\u3057\u3066\u4F5C\u6210\u3057\u307E\u3059\u3002",
-  exercisePlaceholder: "\u4F8B: \u30D9\u30F3\u30C1\u30D7\u30EC\u30B9",
   // Target muscle
   targetMuscleLabel: "\u5BFE\u8C61\u7B4B\u8089",
   targetMuscleDesc: "\u4E3B\u306B\u935B\u3048\u308B\u7B4B\u8089\u30B0\u30EB\u30FC\u30D7\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
@@ -213,7 +211,6 @@ var zh = {
   // Exercise
   exerciseLabel: "\u8BAD\u7EC3\u52A8\u4F5C",
   exerciseDesc: "\u9009\u62E9\u5DF2\u6709\u52A8\u4F5C\uFF0C\u6216\u8F93\u5165\u65B0\u540D\u79F0\u4EE5\u521B\u5EFA\u3002",
-  exercisePlaceholder: "\u4F8B\uFF1A\u5367\u63A8",
   // Target muscle
   targetMuscleLabel: "\u76EE\u6807\u808C\u7FA4",
   targetMuscleDesc: "\u9009\u62E9\u672C\u6B21\u8BAD\u7EC3\u7684\u4E3B\u8981\u808C\u7FA4\u3002",
@@ -295,7 +292,6 @@ var ko = {
   // Exercise
   exerciseLabel: "\uC6B4\uB3D9",
   exerciseDesc: "\uAE30\uC874 \uC6B4\uB3D9\uC744 \uC120\uD0DD\uD558\uAC70\uB098 \uC0C8 \uC774\uB984\uC744 \uC785\uB825\uD558\uC5EC \uC0DD\uC131\uD558\uC138\uC694.",
-  exercisePlaceholder: "\uC608: \uBCA4\uCE58 \uD504\uB808\uC2A4",
   // Target muscle
   targetMuscleLabel: "\uBAA9\uD45C \uADFC\uC721",
   targetMuscleDesc: "\uC8FC\uC694 \uBAA9\uD45C \uADFC\uC721 \uADF8\uB8F9\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
@@ -605,7 +601,15 @@ async function appendCardioLog(app, file, logDate, speed, incline, duration, cal
 }
 
 // src/LoggerModal.ts
-var TARGET_MUSCLES = ["Chest", "Back", "Shoulder", "Arms", "Abs", "Legs", "Cardio"];
+var TARGET_MUSCLES = [
+  "Chest",
+  "Back",
+  "Shoulder",
+  "Arms",
+  "Abs",
+  "Legs",
+  "Cardio"
+];
 var EQUIPMENT_TYPES = [
   "Barbell",
   "Dumbbell",
@@ -701,7 +705,10 @@ var LoggerModal = class extends import_obsidian3.Modal {
   renderCardioInputs(containerEl) {
     const i18n = t();
     const card = containerEl.createDiv({ cls: "cardio-input-card" });
-    card.createEl("p", { cls: "cardio-input-card__label", text: i18n.cardioSectionLabel });
+    card.createEl("p", {
+      cls: "cardio-input-card__label",
+      text: i18n.cardioSectionLabel
+    });
     new import_obsidian3.Setting(card).setName(i18n.cardioSpeedLabel).addText((text) => {
       text.inputEl.type = "number";
       text.inputEl.step = "0.1";
@@ -713,14 +720,18 @@ var LoggerModal = class extends import_obsidian3.Modal {
     new import_obsidian3.Setting(card).setName(i18n.cardioInclineLabel).addText((text) => {
       text.inputEl.type = "number";
       text.inputEl.step = "0.5";
-      text.setValue(this.cardioIncline > 0 ? this.cardioIncline.toString() : "");
+      text.setValue(
+        this.cardioIncline > 0 ? this.cardioIncline.toString() : ""
+      );
       text.onChange((value) => {
         this.cardioIncline = parseFloat(value) || 0;
       });
     });
     new import_obsidian3.Setting(card).setName(i18n.cardioDurationLabel).addText((text) => {
       text.inputEl.type = "number";
-      text.setValue(this.cardioDuration > 0 ? this.cardioDuration.toString() : "");
+      text.setValue(
+        this.cardioDuration > 0 ? this.cardioDuration.toString() : ""
+      );
       text.onChange((value) => {
         this.cardioDuration = parseFloat(value) || 0;
       });
@@ -732,7 +743,6 @@ var LoggerModal = class extends import_obsidian3.Modal {
   renderExerciseSelect(containerEl) {
     const i18n = t();
     new import_obsidian3.Setting(containerEl).setName(i18n.exerciseLabel).setDesc(i18n.exerciseDesc).addText((text) => {
-      text.setPlaceholder(i18n.exercisePlaceholder);
       const dataListId = "exercises-list";
       let datalist = containerEl.querySelector(
         `#${dataListId}`
@@ -810,7 +820,10 @@ var LoggerModal = class extends import_obsidian3.Modal {
       this.equipmentDropdown = dropdown;
       EQUIPMENT_TYPES.forEach((equipment, idx) => {
         var _a;
-        dropdown.addOption(equipment, (_a = i18n.equipmentTypeOptions[idx]) != null ? _a : equipment);
+        dropdown.addOption(
+          equipment,
+          (_a = i18n.equipmentTypeOptions[idx]) != null ? _a : equipment
+        );
       });
       dropdown.setValue(this.equipment).onChange((value) => {
         this.equipment = value;
@@ -888,16 +901,26 @@ var LoggerModal = class extends import_obsidian3.Modal {
       const items = group.querySelectorAll(".setting-item");
       if (isBodyweight) {
         if (items[0])
-          items[0].querySelector(".setting-name").textContent = i18n.setReps(index + 1);
+          items[0].querySelector(".setting-name").textContent = i18n.setReps(
+            index + 1
+          );
         if (items[1])
-          items[1].querySelector(".setting-name").textContent = i18n.setRpe(index + 1);
+          items[1].querySelector(".setting-name").textContent = i18n.setRpe(
+            index + 1
+          );
       } else {
         if (items[0])
-          items[0].querySelector(".setting-name").textContent = i18n.setWeight(index + 1);
+          items[0].querySelector(".setting-name").textContent = i18n.setWeight(
+            index + 1
+          );
         if (items[1])
-          items[1].querySelector(".setting-name").textContent = i18n.setReps(index + 1);
+          items[1].querySelector(".setting-name").textContent = i18n.setReps(
+            index + 1
+          );
         if (items[2])
-          items[2].querySelector(".setting-name").textContent = i18n.setRpe(index + 1);
+          items[2].querySelector(".setting-name").textContent = i18n.setRpe(
+            index + 1
+          );
       }
     });
   }
@@ -909,7 +932,9 @@ var LoggerModal = class extends import_obsidian3.Modal {
     const buttonContainer = containerEl.createDiv({
       cls: "modal-button-container"
     });
-    const cancelButton = buttonContainer.createEl("button", { text: i18n.cancel });
+    const cancelButton = buttonContainer.createEl("button", {
+      text: i18n.cancel
+    });
     cancelButton.addEventListener("click", () => {
       this.close();
     });
@@ -981,7 +1006,9 @@ var LoggerModal = class extends import_obsidian3.Modal {
       );
     }
     const isBodyweight = this.equipment === "Bodyweight";
-    const setsSummary = validSets.map((s) => isBodyweight ? `BW x ${s.reps}reps` : `${s.weight}kg x ${s.reps}reps`).join(", ");
+    const setsSummary = validSets.map(
+      (s) => isBodyweight ? `BW x ${s.reps}reps` : `${s.weight}kg x ${s.reps}reps`
+    ).join(", ");
     new import_obsidian3.Notice(i18n.noticeLoggedStrength(setsSummary, this.exerciseName));
   }
   async submitCardio(file) {
@@ -1015,7 +1042,11 @@ var LoggerModal = class extends import_obsidian3.Modal {
       );
     }
     new import_obsidian3.Notice(
-      i18n.noticeLoggedCardio(this.cardioDuration, Math.round(calories), this.exerciseName)
+      i18n.noticeLoggedCardio(
+        this.cardioDuration,
+        Math.round(calories),
+        this.exerciseName
+      )
     );
   }
   onClose() {
